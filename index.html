@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мои Мини-Инструменты</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f3f3;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+        box-sizing: border-box;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+        font-size: 28px;
+        color: #222;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        max-width: 800px;
+        width: 100%;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      /* Эффект при наведении на карточку */
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Иконки приложений */
+      .icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin-bottom: 15px;
+        color: white;
+      }
+
+      /* Индивидуальные цвета для иконок приложений */
+      .icon-picker {
+        background: #2fa7d6;
+      }
+      .icon-todo {
+        background: #4caf50;
+      }
+      .icon-text {
+        background: #ff9800;
+      }
+      .icon-progress {
+        background: #9c27b0;
+      }
+
+      .title {
+        font-size: 15px;
+        font-weight: bold;
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Мини-Инструменты</h1>
+
+    <div class="grid">
+      <a href="Pixel-Color-Picker.html" class="card">
+        <div class="icon icon-picker">🎨</div>
+        <div class="title">Color Picker</div>
+      </a>
+
+      <a href="todo.html" class="card">
+        <div class="icon icon-todo">✅</div>
+        <div class="title">To-Do List</div>
+      </a>
+
+      <a href="proverka-teksta.html" class="card">
+        <div class="icon icon-text">📝</div>
+        <div class="title">Проверка текста</div>
+      </a>
+
+      <a href="progress-in-days.html" class="card">
+        <div class="icon icon-progress">📅</div>
+        <div class="title">Progress in Days</div>
+      </a>
+    </div>
+  </body>
+</html>

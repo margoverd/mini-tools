@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Таймеры</title>
+    <style>
+      /* Новая эстетика: светлый минимализм */
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+          sans-serif;
+        background-color: #f2f2f7;
+        color: #1c1c1e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 60px 20px;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        max-width: 400px;
+        width: 100%;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        margin-bottom: 32px;
+        text-align: left;
+        color: #000000;
+      }
+
+      /* Поле ввода нового таймера */
+      .create-form {
+        margin-bottom: 32px;
+      }
+
+      .input-wrapper {
+        display: flex;
+        gap: 12px;
+        background: #ffffff;
+        padding: 6px 6px 6px 16px;
+        border-radius: 14px;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      input[type="text"] {
+        flex: 1;
+        background: none;
+        border: none;
+        color: #1c1c1e;
+        font-size: 16px;
+        outline: none;
+        padding: 8px 0;
+      }
+
+      input[type="text"]::placeholder {
+        color: #3a3a3c;
+        opacity: 0.6;
+      }
+
+      button.btn-add {
+        background-color: #1c1c1e;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      button.btn-add:hover {
+        background-color: #3a3a3c;
+      }
+
+      /* Карточки таймеров */
+      .timer-card {
+        background: #ffffff;
+        padding: 24px;
+        border-radius: 18px;
+        margin-bottom: 16px;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+
+      .timer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+
+      .timer-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: #8e8e93;
+        margin: 0;
+      }
+
+      .btn-delete {
+        background: none;
+        border: none;
+        color: #ff3b30;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 0;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .btn-delete:hover {
+        opacity: 1;
+      }
+
+      .main-counter {
+        font-size: 42px;
+        font-weight: 400;
+        letter-spacing: -1px;
+        color: #000000;
+        margin-bottom: 14px;
+      }
+
+      .detailed-counter {
+        font-size: 13px;
+        color: #48484a;
+        letter-spacing: -0.1px;
+        line-height: 1.4;
+      }
+
+      .created-at {
+        font-size: 11px;
+        color: #8e8e93;
+        margin-top: 14px;
+        border-top: 1px solid #f2f2f7;
+        padding-top: 10px;
+      }
+
+      .empty-state {
+        text-align: left;
+        color: #8e8e93;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Прогресс</h1>
+
+      <div class="create-form">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="timerName"
+            placeholder="Новая цель..."
+            onkeydown="handleKeyPress(event)"
+          />
+          <button class="btn-add" onclick="createTimer()">Добавить</button>
+        </div>
+      </div>
+
+      <div id="timersList"></div>
+    </div>
+
+    <script>
+      let timers = JSON.parse(localStorage.getItem("myTimers")) || [];
+
+      // Функция отслеживания нажатия клавиш
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          createTimer();
+        }
+      }
+
+      function createTimer() {
+        const nameInput = document.getElementById("timerName");
+        const name = nameInput.value.trim();
+
+        if (!name) return;
+
+        const newTimer = {
+          id: Date.now(),
+          name: name,
+          createdAt: new Date().toISOString(),
+        };
+
+        timers.push(newTimer);
+        saveTimers();
+        renderTimers();
+        nameInput.value = "";
+      }
+
+      function deleteTimer(id, name) {
+        const confirmDelete = confirm(
+          `Вы уверены, что хотите удалить таймер "${name}"?`,
+        );
+        if (confirmDelete) {
+          timers = timers.filter((t) => t.id !== id);
+          saveTimers();
+          renderTimers();
+        }
+      }
+
+      function saveTimers() {
+        localStorage.setItem("myTimers", JSON.stringify(timers));
+      }
+
+      function parseTimeDifference(createdDateISO) {
+        const now = new Date();
+        const created = new Date(createdDateISO);
+        const diffInMs = now - created;
+
+        const totalSeconds = Math.floor(diffInMs / 1000);
+        const totalMinutes = Math.floor(totalSeconds / 60);
+        const totalHours = Math.floor(totalMinutes / 60);
+        const totalDays = Math.floor(totalHours / 24);
+
+        const months = Math.floor(totalDays / 30);
+        const remainingDaysAfterMonths = totalDays % 30;
+        const weeks = Math.floor(remainingDaysAfterMonths / 7);
+        const days = remainingDaysAfterMonths % 7;
+
+        return { totalDays, months, weeks, days };
+      }
+
+      function formatDate(isoString) {
+        const date = new Date(isoString);
+        return `Старт: ${date.toLocaleDateString()} в ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      }
+
+      function renderTimers() {
+        const container = document.getElementById("timersList");
+        container.innerHTML = "";
+
+        if (timers.length === 0) {
+          container.innerHTML =
+            '<p class="empty-state">Нет активных трекеров</p>';
+          return;
+        }
+
+        timers.forEach((timer) => {
+          const timeData = parseTimeDifference(timer.createdAt);
+
+          const card = document.createElement("div");
+          card.className = "timer-card";
+
+          const safeName = timer.name.replace(/"/g, "&quot;");
+
+          card.innerHTML = `
+                    <div class="timer-header">
+                        <h3 class="timer-title">${timer.name}</h3>
+                        <button class="btn-delete" onclick="deleteTimer(${timer.id}, '${safeName}')">Удалить</button>
+                    </div>
+                    
+                    <div class="main-counter">${timeData.totalDays} дн.</div>
+                    
+                    <div class="detailed-counter">
+                        Период: ${timeData.months} мес. ${timeData.weeks} нед. ${timeData.days} дн.
+                    </div>
+                    
+                    <div class="created-at">${formatDate(timer.createdAt)}</div>
+                `;
+          container.appendChild(card);
+        });
+      }
+
+      renderTimers();
+      setInterval(renderTimers, 1000);
+    </script>
+  </body>
+</html>

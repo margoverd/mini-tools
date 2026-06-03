@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pixel Color Picker</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f3f3;
+      }
+
+      .container {
+        display: flex;
+        padding: 20px;
+        gap: 20px;
+        max-width: 1200px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .sidebar {
+        width: 260px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .main {
+        flex: 1;
+        background: #fff;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .buttons-row {
+        margin-bottom: 15px;
+      }
+
+      button {
+        background: #2fa7d6;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        width: 100%;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .preview {
+        width: 200px;
+        height: 200px;
+        background: repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%)
+          50% / 20px 20px;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .preview img {
+        max-width: 100%;
+      }
+
+      .color-preview {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+      }
+
+      .field {
+        margin-bottom: 10px;
+        position: relative; /* Для позиционирования всплывающей подсказки */
+      }
+
+      .field label {
+        font-size: 12px;
+        color: #555;
+        display: block;
+      }
+
+      .input-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      input {
+        flex: 1;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      .clipboard {
+        cursor: pointer;
+      }
+
+      .clipboard path {
+        transition: all 0.2s;
+      }
+
+      .clipboard:hover path {
+        fill: #2fa7d6;
+      }
+
+      /* Стили для всплывающей надписи о копировании */
+      .toast-msg {
+        position: absolute;
+        top: -12px;
+        right: 0;
+        background: #2fa7d6;
+        color: #fff;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .canvas-wrapper {
+        border: 1px solid #ddd;
+        overflow: auto;
+        height: 100%;
+        background: repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%)
+          50% / 20px 20px;
+      }
+
+      canvas {
+        display: block;
+        cursor: crosshair;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <div class="buttons-row">
+          <button id="uploadBtn">ВЫБРАТЬ ФАЙЛ</button>
+        </div>
+        <input type="file" id="fileInput" hidden />
+
+        <div class="preview">
+          <img id="previewImage" />
+        </div>
+
+        <div class="field">
+          <label>Результат:</label>
+          <div id="colorPreview" class="color-preview"></div>
+        </div>
+
+        <div class="field">
+          <label>HEX</label>
+          <div class="input-row">
+            <input id="pickerResultHEX" readonly />
+            <svg
+              class="clipboard"
+              data-copy="pickerResultHEX"
+              height="22"
+              width="21"
+              viewBox="0 0 22 21"
+            >
+              <path
+                d="M14.5 0h-12C1.4 0 .5.9.5 2v14h2V2h12V0zm3 4h-11c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16h-11V6h11v14z"
+                fill="#000"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>RGB</label>
+          <div class="input-row">
+            <input id="pickerResultRGB" readonly />
+            <svg
+              class="clipboard"
+              data-copy="pickerResultRGB"
+              height="22"
+              width="21"
+              viewBox="0 0 22 21"
+            >
+              <path
+                d="M14.5 0h-12C1.4 0 .5.9.5 2v14h2V2h12V0zm3 4h-11c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16h-11V6h11v14z"
+                fill="#000"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>CMYK</label>
+          <div class="input-row">
+            <input id="pickerResultCMYK" readonly />
+            <svg
+              class="clipboard"
+              data-copy="pickerResultCMYK"
+              height="22"
+              width="21"
+              viewBox="0 0 22 21"
+            >
+              <path
+                d="M14.5 0h-12C1.4 0 .5.9.5 2v14h2V2h12V0zm3 4h-11c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16h-11V6h11v14z"
+                fill="#000"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>HSV</label>
+          <div class="input-row">
+            <input id="pickerResultHSV" readonly />
+            <svg
+              class="clipboard"
+              data-copy="pickerResultHSV"
+              height="22"
+              width="21"
+              viewBox="0 0 22 21"
+            >
+              <path
+                d="M14.5 0h-12C1.4 0 .5.9.5 2v14h2V2h12V0zm3 4h-11c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16h-11V6h11v14z"
+                fill="#000"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>HSL</label>
+          <div class="input-row">
+            <input id="pickerResultHSL" readonly />
+            <svg
+              class="clipboard"
+              data-copy="pickerResultHSL"
+              height="22"
+              width="21"
+              viewBox="0 0 22 21"
+            >
+              <path
+                d="M14.5 0h-12C1.4 0 .5.9.5 2v14h2V2h12V0zm3 4h-11c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16h-11V6h11v14z"
+                fill="#000"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="canvas-wrapper">
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const fileInput = document.getElementById("fileInput");
+      const uploadBtn = document.getElementById("uploadBtn");
+      const previewImage = document.getElementById("previewImage");
+      const colorPreview = document.getElementById("colorPreview");
+
+      let isColorLocked = false;
+
+      uploadBtn.onclick = () => fileInput.click();
+
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        loadFile(file);
+      };
+
+      document.addEventListener("paste", (e) => {
+        for (const item of e.clipboardData.items) {
+          if (item.type.indexOf("image") !== -1) {
+            loadFile(item.getAsFile());
+          }
+        }
+      });
+
+      function loadFile(file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = new Image();
+
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0);
+
+            previewImage.src = e.target.result;
+            isColorLocked = false;
+          };
+
+          img.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function getPixelData(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor(
+          ((e.clientX - rect.left) * canvas.width) / rect.width,
+        );
+        const y = Math.floor(
+          ((e.clientY - rect.top) * canvas.height) / rect.height,
+        );
+        return ctx.getImageData(x, y, 1, 1).data;
+      }
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (isColorLocked) return;
+
+        const pixel = getPixelData(e);
+        updateColor(pixel[0], pixel[1], pixel[2], pixel[3]);
+      });
+
+      canvas.addEventListener("click", (e) => {
+        isColorLocked = !isColorLocked;
+
+        if (isColorLocked) {
+          const pixel = getPixelData(e);
+          updateColor(pixel[0], pixel[1], pixel[2], pixel[3]);
+        }
+      });
+
+      function updateColor(r, g, b, a) {
+        const hex = rgbToHex(r, g, b);
+        const rgb = `rgb(${r}, ${g}, ${b})`;
+        const rgba = `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
+
+        document.getElementById("pickerResultHEX").value = hex;
+        document.getElementById("pickerResultRGB").value = rgb + " / " + rgba;
+        document.getElementById("pickerResultCMYK").value = rgbToCMYK(r, g, b);
+        document.getElementById("pickerResultHSV").value = rgbToHSV(r, g, b);
+        document.getElementById("pickerResultHSL").value = rgbToHSL(r, g, b);
+
+        colorPreview.style.background = hex;
+      }
+
+      function rgbToHex(r, g, b) {
+        return (
+          "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+        );
+      }
+
+      function rgbToCMYK(r, g, b) {
+        let c = 1 - r / 255;
+        let m = 1 - g / 255;
+        let y = 1 - b / 255;
+        let k = Math.min(c, m, y);
+
+        c = (c - k) / (1 - k) || 0;
+        m = (m - k) / (1 - k) || 0;
+        y = (y - k) / (1 - k) || 0;
+
+        return `cmyk(${(c * 100) | 0}%, ${(m * 100) | 0}%, ${(y * 100) | 0}%, ${(k * 100) | 0}%)`;
+      }
+
+      function rgbToHSV(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let max = Math.max(r, g, b);
+        let min = Math.min(r, g, b);
+        let d = max - min;
+
+        let h;
+
+        if (d == 0) h = 0;
+        else if (max == r) h = ((g - b) / d) % 6;
+        else if (max == g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+
+        h = Math.round(h * 60);
+        if (h < 0) h += 360;
+
+        let s = max == 0 ? 0 : d / max;
+        let v = max;
+
+        return `hsv(${h}, ${(s * 100) | 0}%, ${(v * 100) | 0}%)`;
+      }
+
+      function rgbToHSL(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let max = Math.max(r, g, b);
+        let min = Math.min(r, g, b);
+        let d = max - min;
+
+        let h;
+
+        if (d == 0) h = 0;
+        else if (max == r) h = ((g - b) / d) % 6;
+        else if (max == g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+
+        h = Math.round(h * 60);
+        if (h < 0) h += 360;
+
+        let l = (max + min) / 2;
+        let s = d == 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+
+        return `hsl(${h}, ${(s * 100) | 0}%, ${(l * 100) | 0}%)`;
+      }
+
+      // Обновленная логика копирования с уведомлением
+      document.querySelectorAll(".clipboard").forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.dataset.copy;
+          const inputEl = document.getElementById(id);
+
+          navigator.clipboard.writeText(inputEl.value);
+
+          // Находим родительский контейнер .field для вывода сообщения
+          const fieldEl = btn.closest(".field");
+
+          // Проверяем, нет ли уже активной надписи, чтобы не дублировать
+          if (fieldEl.querySelector(".toast-msg")) return;
+
+          // Создаем элемент надписи
+          const toast = document.createElement("span");
+          toast.className = "toast-msg";
+          toast.innerText = "скопировано";
+
+          fieldEl.appendChild(toast);
+
+          // Удаляем надпись ровно через 1500 миллисекунд (1.5 сек)
+          setTimeout(() => {
+            toast.remove();
+          }, 500);
+        };
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo Progress</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      background: #f9fafb;
+    }
+
+    .task-item {
+      transition: all 0.3s ease;
+    }
+
+    .task-item.completed span {
+      text-decoration: line-through;
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-xl bg-white shadow-xl rounded-2xl p-6 space-y-6">
+
+    <h1 class="text-2xl font-semibold text-center">Todo List</h1>
+
+    <textarea id="inputList"
+      class="textarea textarea-bordered w-full h-32"
+      placeholder="Вставь сюда список задач..."></textarea>
+
+    <button onclick="generateList()" class="btn btn-primary w-full transition-all duration-300">
+      Создать список
+    </button>
+
+    <div id="progressSection" class="hidden space-y-3">
+
+      <div id="statusText" class="text-center font-medium transition-all duration-300">
+        Выполнено 0/0
+      </div>
+
+      <progress id="progressBar" class="progress progress-primary w-full transition-all duration-500" value="0" max="100"></progress>
+
+      <div id="taskContainer" class="space-y-2 pt-2"></div>
+
+    </div>
+
+  </div>
+
+<script>
+function generateList() {
+  const input = document.getElementById("inputList").value.trim();
+  if (!input) return;
+
+  const lines = input.split("\n")
+    .map(line => line.replace(/^[\s\-\*\d\.\)]+/, '').trim())
+    .filter(line => line.length > 0);
+
+  const container = document.getElementById("taskContainer");
+  container.innerHTML = "";
+
+  lines.forEach((task, index) => {
+    const div = document.createElement("div");
+    div.className = "task-item flex items-center gap-3 fade-in";
+
+    div.innerHTML = `
+      <input type="checkbox" class="checkbox checkbox-primary transition-all duration-300">
+      <span class="transition-all duration-300">${task}</span>
+    `;
+
+    container.appendChild(div);
+  });
+
+  document.getElementById("progressSection").classList.remove("hidden");
+  updateProgress();
+}
+
+function updateProgress() {
+  const tasks = document.querySelectorAll(".task-item");
+  const checked = document.querySelectorAll(".task-item input:checked");
+
+  const total = tasks.length;
+  const done = checked.length;
+
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  document.getElementById("progressBar").value = percent;
+
+  const status = document.getElementById("statusText");
+
+  if (done === total && total !== 0) {
+    status.innerHTML = "Все задачи выполнены супер!! 🎉";
+    launchConfetti();
+  } else {
+    status.innerHTML = `Выполнено ${done}/${total}`;
+  }
+
+  tasks.forEach(task => {
+    const checkbox = task.querySelector("input");
+    if (checkbox.checked) {
+      task.classList.add("completed");
+    } else {
+      task.classList.remove("completed");
+    }
+  });
+}
+
+document.addEventListener("change", function(e) {
+  if (e.target.matches(".task-item input")) {
+    updateProgress();
+  }
+});
+
+function launchConfetti() {
+  confetti({
+    particleCount: 120,
+    spread: 80,
+    origin: { y: 0.6 }
+  });
+}
+</script>
+
+</body>
+</html>
