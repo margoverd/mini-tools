@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Stylist</title>
+    <!-- Подключаем библиотеку qr-code-styling -->
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"
+    ></script>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        margin: 0;
+        padding: 20px 10px;
+        display: flex;
+        justify-content: center;
+      }
+      .app-container {
+        display: flex;
+        gap: 30px;
+        background: #262626;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        max-width: 900px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .controls {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .preview-zone {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #111;
+        border-radius: 12px;
+        padding: 20px;
+        min-height: 350px;
+        position: relative;
+      }
+      /* Сетка на фоне превью, чтобы было видно прозрачность */
+      .preview-zone::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.05;
+        background-image:
+          linear-gradient(45deg, #ccc 25%, transparent 25%),
+          linear-gradient(-45deg, #ccc 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #ccc 75%),
+          linear-gradient(-45deg, transparent 75%, #ccc 75%);
+        background-size: 20px 20px;
+        background-position:
+          0 0,
+          0 10px,
+          10px -10px,
+          -10px 0px;
+        border-radius: 12px;
+        z-index: 0;
+      }
+      #canvas-qr {
+        z-index: 1;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      /* Делаем сам SVG внутри библиотеки адаптивным */
+      #canvas-qr svg {
+        max-width: 100%;
+        height: auto !important;
+      }
+      h2 {
+        margin: 0 0 10px 0;
+        font-size: 22px;
+        color: #fff;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      label {
+        font-size: 14px;
+        color: #aaa;
+        font-weight: 500;
+      }
+      input[type="text"],
+      select,
+      input[type="file"] {
+        background: #333;
+        border: 1px solid #444;
+        padding: 12px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+        width: 100%;
+      }
+      input[type="text"]:focus,
+      select:focus {
+        border-color: #007aff;
+      }
+      .color-picker-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      input[type="color"] {
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        cursor: pointer;
+        background: none;
+        padding: 0;
+      }
+      .btn-download {
+        background: #007aff;
+        color: white;
+        border: none;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background 0.2s;
+        z-index: 1;
+        width: 100%;
+        max-width: 300px;
+      }
+      .btn-download:hover {
+        background: #0063cc;
+      }
+
+      /* Адаптив под мобилки */
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+        .app-container {
+          flex-direction: column-reverse; /* Превью будет сверху, настройки снизу — так удобнее на смартфонах */
+          gap: 25px;
+          padding: 20px;
+        }
+        .preview-zone {
+          min-height: auto;
+          padding: 15px;
+        }
+        .btn-download {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Левая панель управления -->
+      <div class="controls">
+        <h2>Настройки QR-кода</h2>
+
+        <div class="form-group">
+          <label for="qr-data">Ссылка или текст:</label>
+          <input type="text" id="qr-data" value="https://bodycola.ru" />
+        </div>
+
+        <div class="form-group">
+          <label for="qr-color">Цвет элементов:</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="qr-color" value="#ffffff" />
+            <span id="color-hex">#ffffff</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dot-style">Форма внутренних точек:</label>
+          <select id="dot-style">
+            <option value="rounded" selected>Скругленные</option>
+            <option value="extra-rounded">Максимально круглые</option>
+            <option value="square">Квадратные</option>
+            <option value="dots">Точки</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="corner-style">Форма рамок:</label>
+          <select id="corner-style">
+            <option value="extra-rounded" selected>Мягкие углы</option>
+            <option value="rounded">Слегка скругленные</option>
+            <option value="square">Квадратные</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="qr-logo">Иконка/Логотип по центру:</label>
+          <input type="file" id="qr-logo" accept="image/*" />
+        </div>
+      </div>
+
+      <!-- Правая панель интерактивного превью -->
+      <div class="preview-zone">
+        <div id="canvas-qr"></div>
+        <button class="btn-download" id="download-btn">
+          Скачать прозрачный PNG
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Базовые конфигурации для генератора
+      const qrConfig = {
+        width: 300,
+        height: 300,
+        type: "svg",
+        data: document.getElementById("qr-data").value,
+        image: "",
+        dotsOptions: { color: "#ffffff", type: "rounded" },
+        backgroundOptions: { color: "transparent" }, // Всегда прозрачный фон
+        imageOptions: {
+          crossOrigin: "anonymous",
+          hideBackgroundDots: true,
+          imageSize: 0.35,
+          margin: 4,
+        },
+        cornersSquareOptions: { color: "#ffffff", type: "extra-rounded" },
+        cornersDotOptions: { color: "#ffffff", type: "dot" },
+      };
+
+      // Инициализация библиотеки
+      const qrCode = new QRCodeStyling(qrConfig);
+      qrCode.append(document.getElementById("canvas-qr"));
+
+      // Функция обновления изменений на лету
+      function updateQR() {
+        const data = document.getElementById("qr-data").value;
+        const color = document.getElementById("qr-color").value;
+        const dotStyle = document.getElementById("dot-style").value;
+        const cornerStyle = document.getElementById("corner-style").value;
+
+        document.getElementById("color-hex").innerText = color;
+
+        qrCode.update({
+          data: data,
+          dotsOptions: { color: color, type: dotStyle },
+          cornersSquareOptions: { color: color, type: cornerStyle },
+          cornersDotOptions: { color: color, type: "dot" },
+        });
+      }
+
+      // Слушатели событий интерфейса
+      document.getElementById("qr-data").addEventListener("input", updateQR);
+      document.getElementById("qr-color").addEventListener("input", updateQR);
+      document.getElementById("dot-style").addEventListener("change", updateQR);
+      document
+        .getElementById("corner-style")
+        .addEventListener("change", updateQR);
+
+      // Обработка загрузки логотипа
+      document
+        .getElementById("qr-logo")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              qrCode.update({
+                image: event.target.result,
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+      // Функция скачивания в PNG
+      document.getElementById("download-btn").addEventListener("click", () => {
+        qrCode.download({ name: "qr-code-bodycola", extension: "png" });
+      });
+    </script>
+  </body>
+</html>

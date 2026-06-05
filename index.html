@@ -1,151 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мои Инструменты</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f3f3f3;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мои Инструменты</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f3f3f3;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
 
-    header {
-      margin-top: 40px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
+      header {
+        margin-top: 40px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #222;
-    }
+      header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #222;
+      }
 
-    header p {
-      margin: 5px 0 0 0;
-      font-size: 14px;
-      color: #666;
-    }
+      header p {
+        margin: 5px 0 0 0;
+        font-size: 14px;
+        color: #666;
+      }
 
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      max-width: 900px;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        max-width: 900px;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+      }
 
-    .tool-card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      padding: 25px 15px;
-      text-align: center;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+      .tool-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        padding: 25px 15px;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
 
-    /* Эффект при наведении как на айфоне */
-    .tool-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+      /* Эффект при наведении как на айфоне */
+      .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
 
-    .tool-card:active {
-      transform: translateY(-2px);
-    }
+      .tool-card:active {
+        transform: translateY(-2px);
+      }
 
-    .icon-wrapper {
-      width: 60px;
-      height: 60px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-      color: white;
-    }
+      .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: white;
+      }
 
-    .tool-name {
-      font-size: 15px;
-      font-weight: bold;
-      color: #333;
-    }
+      .tool-name {
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+      }
 
-    /* Цвета для иконок приложений */
-    .bg-text { background: #ff9500; }  /* Оранжевый */
-    .bg-todo { background: #34c759; }  /* Зеленый */
-    .bg-picker { background: #2fa7d6; }/* Твой фирменный голубой */
-    .bg-progress { background: #5856d6; } /* Фиолетовый */
+      /* Цвета для иконок приложений */
+      .bg-text {
+        background: #ff9500;
+      } /* Оранжевый */
+      .bg-todo {
+        background: #34c759;
+      } /* Зеленый */
+      .bg-picker {
+        background: #2fa7d6;
+      } /* Твой фирменный голубой */
+      .bg-progress {
+        background: #5856d6;
+      } /* Фиолетовый */
 
-    svg {
-      width: 32px;
-      height: 32px;
-      fill: currentColor;
-    }
-  </style>
-</head>
-<body>
+      svg {
+        width: 32px;
+        height: 32px;
+        fill: currentColor;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Мини Инструменты</h1>
+      <p>Все утилиты в одном месте</p>
+    </header>
 
-  <header>
-    <h1>Мини Инструменты</h1>
-    <p>Все утилиты в одном месте</p>
-  </header>
+    <div class="grid-container">
+      <a href="./proverka-teksta/index.html" class="tool-card">
+        <div class="icon-wrapper bg-text">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+            />
+          </svg>
+        </div>
+        <div class="tool-name">Проверка текста</div>
+      </a>
 
-  <div class="grid-container">
+      <a href="./todo/index.html" class="tool-card">
+        <div class="icon-wrapper bg-todo">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+            />
+          </svg>
+        </div>
+        <div class="tool-name">To-Do Список</div>
+      </a>
 
-    <a href="./proverka-teksta/index.html" class="tool-card">
-      <div class="icon-wrapper bg-text">
-        <svg viewBox="0 0 24 24">
-          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-        </svg>
-      </div>
-      <div class="tool-name">Проверка текста</div>
-    </a>
+      <a href="./Pixel-Color-Picker/index.html" class="tool-card">
+        <div class="icon-wrapper bg-picker">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M17.66 5.41l.92.92-2.69 2.69-.92-.92 2.69-2.69M11 15.66l-.92-.92 6.58-6.58.92.92L11 15.66m-1.88.9l-.22-.22 6.58-6.58.22.22-6.58 6.58M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.93-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.13-3.12c.4-.4.4-1.03 0-1.42z"
+            />
+          </svg>
+        </div>
+        <div class="tool-name">Color Picker</div>
+      </a>
 
-    <a href="./todo/index.html" class="tool-card">
-      <div class="icon-wrapper bg-todo">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-      </div>
-      <div class="tool-name">To-Do Список</div>
-    </a>
+      <a href="./progress-in-days/index.html" class="tool-card">
+        <div class="icon-wrapper bg-progress">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
+            />
+          </svg>
+        </div>
+        <div class="tool-name">Progress in Days</div>
+      </a>
 
-    <a href="./Pixel-Color-Picker/index.html" class="tool-card">
-      <div class="icon-wrapper bg-picker">
-        <svg viewBox="0 0 24 24">
-          <path d="M17.66 5.41l.92.92-2.69 2.69-.92-.92 2.69-2.69M11 15.66l-.92-.92 6.58-6.58.92.92L11 15.66m-1.88.9l-.22-.22 6.58-6.58.22.22-6.58 6.58M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.93-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.13-3.12c.4-.4.4-1.03 0-1.42z"/>
-        </svg>
-      </div>
-      <div class="tool-name">Color Picker</div>
-    </a>
-
-    <a href="./progress-in-days/index.html" class="tool-card">
-      <div class="icon-wrapper bg-progress">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-        </svg>
-      </div>
-      <div class="tool-name">Progress in Days</div>
-    </a>
-
-  </div>
-
-</body>
+      <a href="./qr-stylist/index.html" class="tool-card">
+        <div
+          class="icon-wrapper bg-qr"
+          style="background: linear-gradient(135deg, #7000ff, #007aff)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            style="width: 24px; height: 24px; color: white"
+          >
+            <path
+              d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM13 13h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm2 2h2v-2h2v2h2v-2h-2v-2h2v-2h-4v2h-2v-2h-2v4z"
+            />
+          </svg>
+        </div>
+        <div class="tool-name">QR Code Stylist</div>
+      </a>
+    </div>
+  </body>
 </html>
