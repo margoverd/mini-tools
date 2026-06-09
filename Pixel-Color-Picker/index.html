@@ -2,6 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pixel Color Picker</title>
 
     <style>
@@ -18,6 +19,7 @@
         max-width: 1200px;
         margin-right: auto;
         margin-left: auto;
+        box-sizing: border-box;
       }
 
       .sidebar {
@@ -26,6 +28,7 @@
         padding: 15px;
         border-radius: 6px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
       }
 
       .main {
@@ -34,6 +37,8 @@
         padding: 15px;
         border-radius: 6px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        min-width: 0; /* Предотвращает распирание флекс-контейнера крупным canvas */
       }
 
       .buttons-row {
@@ -56,7 +61,8 @@
       }
 
       .preview {
-        width: 200px;
+        width: 100%;
+        max-width: 200px;
         height: 200px;
         background: repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%)
           50% / 20px 20px;
@@ -65,10 +71,14 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        margin-right: auto;
+        margin-left: auto;
       }
 
       .preview img {
         max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
       }
 
       .color-preview {
@@ -76,6 +86,7 @@
         height: 40px;
         border: 1px solid #ccc;
         margin-bottom: 10px;
+        box-sizing: border-box;
       }
 
       .field {
@@ -101,10 +112,12 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 13px;
+        min-width: 0; /* Чтобы инпуты не ломали верстку на мелких экранах */
       }
 
       .clipboard {
         cursor: pointer;
+        flex-shrink: 0;
       }
 
       .clipboard path {
@@ -134,13 +147,36 @@
         border: 1px solid #ddd;
         overflow: auto;
         height: 100%;
+        max-height: 70vh; /* Ограничение по высоте для мобильных */
         background: repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%)
           50% / 20px 20px;
+        -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
       }
 
       canvas {
         display: block;
         cursor: crosshair;
+        max-width: 100%; /* Позволяет холсту ужиматься под экран телефона */
+        height: auto !important;
+      }
+
+      /* Адаптивность для мобильных устройств */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column-reverse; /* Сначала большая рабочая зона с canvas, ниже — сайдбар */
+          padding: 10px;
+          gap: 15px;
+        }
+
+        .sidebar,
+        .main {
+          width: 100%;
+        }
+
+        .preview {
+          max-width: 100%;
+          height: 150px;
+        }
       }
     </style>
   </head>
@@ -292,6 +328,7 @@
       });
 
       function loadFile(file) {
+        if (!file) return;
         const reader = new FileReader();
 
         reader.onload = (e) => {
@@ -313,34 +350,62 @@
         reader.readAsDataURL(file);
       }
 
-      function getPixelData(e) {
+      // Универсальная функция получения данных пикселя (работает с клиентами мыши и тача)
+      function getPixelData(clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
+
+        // Пересчитываем координаты с учетом CSS-масштабирования canvas
         const x = Math.floor(
-          ((e.clientX - rect.left) * canvas.width) / rect.width,
+          ((clientX - rect.left) * canvas.width) / rect.width,
         );
         const y = Math.floor(
-          ((e.clientY - rect.top) * canvas.height) / rect.height,
+          ((clientY - rect.top) * canvas.height) / rect.height,
         );
+
+        // Защита от выхода за границы холста
+        if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+          return [0, 0, 0, 0];
+        }
+
         return ctx.getImageData(x, y, 1, 1).data;
       }
 
+      // --- СОБЫТИЯ МЫШИ (ДЕСКТОП) ---
       canvas.addEventListener("mousemove", (e) => {
         if (isColorLocked) return;
-
-        const pixel = getPixelData(e);
+        const pixel = getPixelData(e.clientX, e.clientY);
         updateColor(pixel[0], pixel[1], pixel[2], pixel[3]);
       });
 
       canvas.addEventListener("click", (e) => {
         isColorLocked = !isColorLocked;
-
         if (isColorLocked) {
-          const pixel = getPixelData(e);
+          const pixel = getPixelData(e.clientX, e.clientY);
           updateColor(pixel[0], pixel[1], pixel[2], pixel[3]);
         }
       });
 
+      // --- ТАЧ-СОБЫТИЯ (МОБИЛЬНЫЕ) ---
+      function handleTouch(e) {
+        if (isColorLocked || e.touches.length === 0) return;
+        // Отменяем стандартный скролл экрана пальцем, пока водим внутри canvas
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const pixel = getPixelData(touch.clientX, touch.clientY);
+        updateColor(pixel[0], pixel[1], pixel[2], pixel[3]);
+      }
+
+      canvas.addEventListener("touchstart", handleTouch, { passive: false });
+      canvas.addEventListener("touchmove", handleTouch, { passive: false });
+
+      canvas.addEventListener("touchend", (e) => {
+        // На мобильных устройствах фиксация цвета происходит при отрыве пальца
+        isColorLocked = true;
+      });
+
       function updateColor(r, g, b, a) {
+        if (a === 0) return; // Игнорируем полностью прозрачные зоны без загруженных изображений
         const hex = rgbToHex(r, g, b);
         const rgb = `rgb(${r}, ${g}, ${b})`;
         const rgba = `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
@@ -431,20 +496,16 @@
 
           navigator.clipboard.writeText(inputEl.value);
 
-          // Находим родительский контейнер .field для вывода сообщения
           const fieldEl = btn.closest(".field");
 
-          // Проверяем, нет ли уже активной надписи, чтобы не дублировать
           if (fieldEl.querySelector(".toast-msg")) return;
 
-          // Создаем элемент надписи
           const toast = document.createElement("span");
           toast.className = "toast-msg";
           toast.innerText = "скопировано";
 
           fieldEl.appendChild(toast);
 
-          // Удаляем надпись ровно через 1500 миллисекунд (1.5 сек)
           setTimeout(() => {
             toast.remove();
           }, 500);
