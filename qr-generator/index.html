@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Code Stylist</title>
-    <!-- Подключаем библиотеку qr-code-styling -->
+    <title>QR Code Stylist Pro</title>
     <script
       type="text/javascript"
       src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"
@@ -28,15 +27,26 @@
         padding: 30px;
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        max-width: 900px;
+        max-width: 1000px;
         width: 100%;
         box-sizing: border-box;
       }
       .controls {
-        flex: 1;
+        flex: 1.2;
         display: flex;
         flex-direction: column;
         gap: 20px;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+      /* Стилизация скроллбара для панели настроек */
+      .controls::-webkit-scrollbar {
+        width: 6px;
+      }
+      .controls::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 4px;
       }
       .preview-zone {
         flex: 1;
@@ -47,10 +57,12 @@
         background: #111;
         border-radius: 12px;
         padding: 20px;
-        min-height: 350px;
+        min-height: 400px;
         position: relative;
+        align-self: flex-start;
+        position: sticky;
+        top: 20px;
       }
-      /* Сетка на фоне превью, чтобы было видно прозрачность */
       .preview-zone::before {
         content: "";
         position: absolute;
@@ -75,36 +87,55 @@
         max-width: 100%;
         display: flex;
         justify-content: center;
+        margin-bottom: 20px;
       }
-      /* Делаем сам SVG внутри библиотеки адаптивным */
       #canvas-qr svg {
         max-width: 100%;
         height: auto !important;
+        border-radius: 8px;
       }
       h2 {
-        margin: 0 0 10px 0;
+        margin: 0 0 5px 0;
         font-size: 22px;
         color: #fff;
+      }
+      .section-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #007aff;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 5px;
       }
       .form-group {
         display: flex;
         flex-direction: column;
         gap: 8px;
       }
+      .form-row {
+        display: flex;
+        gap: 12px;
+      }
+      .form-row .form-group {
+        flex: 1;
+      }
       label {
-        font-size: 14px;
+        font-size: 13px;
         color: #aaa;
         font-weight: 500;
       }
       input[type="text"],
       select,
-      input[type="file"] {
+      input[type="file"],
+      input[type="range"] {
         background: #333;
         border: 1px solid #444;
-        padding: 12px;
+        padding: 10px;
         border-radius: 8px;
         color: #fff;
-        font-size: 15px;
+        font-size: 14px;
         outline: none;
         box-sizing: border-box;
         width: 100%;
@@ -117,15 +148,24 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        background: #333;
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid #444;
       }
       input[type="color"] {
         border: none;
-        width: 44px;
-        height: 44px;
-        border-radius: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
         cursor: pointer;
         background: none;
         padding: 0;
+      }
+      .color-hex {
+        font-size: 13px;
+        color: #eee;
+        font-family: monospace;
       }
       .btn-download {
         background: #007aff;
@@ -136,39 +176,40 @@
         font-weight: 600;
         border-radius: 8px;
         cursor: pointer;
-        margin-top: 20px;
         transition: background 0.2s;
         z-index: 1;
         width: 100%;
-        max-width: 300px;
       }
       .btn-download:hover {
         background: #0063cc;
       }
+      .hidden {
+        display: none !important;
+      }
 
-      /* Адаптив под мобилки */
       @media (max-width: 768px) {
         body {
           padding: 10px;
         }
         .app-container {
-          flex-direction: column-reverse; /* Превью будет сверху, настройки снизу — так удобнее на смартфонах */
+          flex-direction: column-reverse;
           gap: 25px;
           padding: 20px;
+        }
+        .controls {
+          max-height: none;
+          overflow-y: visible;
         }
         .preview-zone {
           min-height: auto;
           padding: 15px;
-        }
-        .btn-download {
-          max-width: 100%;
+          position: static;
         }
       }
     </style>
   </head>
   <body>
     <div class="app-container">
-      <!-- Левая панель управления -->
       <div class="controls">
         <h2>Настройки QR-кода</h2>
 
@@ -177,49 +218,147 @@
           <input type="text" id="qr-data" value="https://bodycola.ru" />
         </div>
 
-        <div class="form-group">
-          <label for="qr-color">Цвет элементов:</label>
-          <div class="color-picker-wrapper">
-            <input type="color" id="qr-color" value="#ffffff" />
-            <span id="color-hex">#ffffff</span>
+        <div class="section-title">Задний фон</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bg-type">Тип фона:</label>
+            <select id="bg-type">
+              <option value="transparent">Прозрачный</option>
+              <option value="single" selected>Сплошной цвет</option>
+              <option value="gradient">Градиент</option>
+            </select>
+          </div>
+          <div class="form-group" id="bg-color-1-group">
+            <label id="bg-color-1-label" for="bg-color-1">Цвет фона:</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="bg-color-1" value="#111111" />
+              <span id="bg-hex-1" class="color-hex">#111111</span>
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="dot-style">Форма внутренних точек:</label>
-          <select id="dot-style">
-            <option value="rounded" selected>Скругленные</option>
-            <option value="extra-rounded">Максимально круглые</option>
-            <option value="square">Квадратные</option>
-            <option value="dots">Точки</option>
-          </select>
+        <div class="form-row hidden" id="bg-gradient-details">
+          <div class="form-group">
+            <label for="bg-color-2">Второй цвет:</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="bg-color-2" value="#333333" />
+              <span id="bg-hex-2" class="color-hex">#333333</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bg-gradient-type">Форма градиента:</label>
+            <select id="bg-gradient-type">
+              <option value="linear" selected>Линейный</option>
+              <option value="radial">Радиальный</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="corner-style">Форма рамок:</label>
-          <select id="corner-style">
-            <option value="extra-rounded" selected>Мягкие углы</option>
-            <option value="rounded">Слегка скругленные</option>
-            <option value="square">Квадратные</option>
-          </select>
+        <div class="section-title">Внутренние точки</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dot-style">Форма точек:</label>
+            <select id="dot-style">
+              <option value="rounded" selected>Скругленные</option>
+              <option value="extra-rounded">Максимально круглые</option>
+              <option value="square">Квадратные</option>
+              <option value="dots">Точки</option>
+              <option value="classy">Элегантные</option>
+              <option value="classy-rounded">Элегантные скругленные</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="dot-color">Цвет точек:</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="dot-color" value="#ffffff" />
+              <span id="dot-hex" class="color-hex">#ffffff</span>
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="qr-logo">Иконка/Логотип по центру:</label>
-          <input type="file" id="qr-logo" accept="image/*" />
+        <div class="section-title">Угловые рамки («Глаза»)</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="corner-square-style">Форма внешних рамок:</label>
+            <select id="corner-square-style">
+              <option value="extra-rounded" selected>Мягкие углы</option>
+              <option value="rounded">Скругленные</option>
+              <option value="square">Квадратные</option>
+              <option value="dot">Точка</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="corner-square-color">Цвет внешних рамок:</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="corner-square-color" value="#ffffff" />
+              <span id="corner-square-hex" class="color-hex">#ffffff</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="corner-dot-style">Форма внутренних центров:</label>
+            <select id="corner-dot-style">
+              <option value="dot" selected>Округлая</option>
+              <option value="square">Квадратная</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="corner-dot-color">Цвет внутренних центров:</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="corner-dot-color" value="#ffffff" />
+              <span id="corner-dot-hex" class="color-hex">#ffffff</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Логотип</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="qr-logo">Иконка по центру:</label>
+            <input type="file" id="qr-logo" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label for="logo-size">Размер логотипа:</label>
+            <input
+              type="range"
+              id="logo-size"
+              min="0.1"
+              max="0.5"
+              step="0.05"
+              value="0.3"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Правая панель интерактивного превью -->
       <div class="preview-zone">
         <div id="canvas-qr"></div>
+
+        <div
+          class="form-group"
+          style="width: 100%; max-width: 300px; margin-bottom: 15px; z-index: 1"
+        >
+          <label for="download-ext">Формат скачивания:</label>
+          <select id="download-ext">
+            <option value="png" selected>PNG</option>
+            <option value="svg">SVG</option>
+            <option value="jpeg">JPEG</option>
+            <option value="webp">WEBP</option>
+          </select>
+        </div>
+
         <button class="btn-download" id="download-btn">
-          Скачать прозрачный PNG
+          Скачать в формате PNG
         </button>
       </div>
     </div>
 
     <script>
+      // Переменная для хранения DataURL загруженного логотипа
+      let uploadedLogo = "";
+
       // Базовые конфигурации для генератора
       const qrConfig = {
         width: 300,
@@ -228,11 +367,11 @@
         data: document.getElementById("qr-data").value,
         image: "",
         dotsOptions: { color: "#ffffff", type: "rounded" },
-        backgroundOptions: { color: "transparent" }, // Всегда прозрачный фон
+        backgroundOptions: { color: "#111111" },
         imageOptions: {
           crossOrigin: "anonymous",
           hideBackgroundDots: true,
-          imageSize: 0.35,
+          imageSize: 0.3,
           margin: 4,
         },
         cornersSquareOptions: { color: "#ffffff", type: "extra-rounded" },
@@ -246,27 +385,130 @@
       // Функция обновления изменений на лету
       function updateQR() {
         const data = document.getElementById("qr-data").value;
-        const color = document.getElementById("qr-color").value;
+
+        // Цвета элементов
+        const dotColor = document.getElementById("dot-color").value;
+        const cornerSquareColor = document.getElementById(
+          "corner-square-color",
+        ).value;
+        const cornerDotColor =
+          document.getElementById("corner-dot-color").value;
+
+        // Стили элементов
         const dotStyle = document.getElementById("dot-style").value;
-        const cornerStyle = document.getElementById("corner-style").value;
+        const cornerSquareStyle = document.getElementById(
+          "corner-square-style",
+        ).value;
+        const cornerDotStyle =
+          document.getElementById("corner-dot-style").value;
 
-        document.getElementById("color-hex").innerText = color;
+        // Размер логотипа
+        const logoSize = parseFloat(document.getElementById("logo-size").value);
 
+        // Обновляем текстовые HEX-подписи
+        document.getElementById("dot-hex").innerText = dotColor;
+        document.getElementById("corner-square-hex").innerText =
+          cornerSquareColor;
+        document.getElementById("corner-dot-hex").innerText = cornerDotColor;
+
+        // Конфигурация фона
+        const bgType = document.getElementById("bg-type").value;
+        const bgColor1 = document.getElementById("bg-color-1").value;
+        const bgColor2 = document.getElementById("bg-color-2").value;
+        const bgGradientType =
+          document.getElementById("bg-gradient-type").value;
+
+        document.getElementById("bg-hex-1").innerText = bgColor1;
+        document.getElementById("bg-hex-2").innerText = bgColor2;
+
+        let backgroundOptions = {};
+
+        // Логика переключения интерфейса настроек фона
+        if (bgType === "transparent") {
+          document.getElementById("bg-color-1-group").classList.add("hidden");
+          document
+            .getElementById("bg-gradient-details")
+            .classList.add("hidden");
+          backgroundOptions = { color: "transparent" };
+        } else if (bgType === "single") {
+          document
+            .getElementById("bg-color-1-group")
+            .classList.remove("hidden");
+          document.getElementById("bg-color-1-label").innerText = "Цвет фона:";
+          document
+            .getElementById("bg-gradient-details")
+            .classList.add("hidden");
+          backgroundOptions = { color: bgColor1 };
+        } else if (bgType === "gradient") {
+          document
+            .getElementById("bg-color-1-group")
+            .classList.remove("hidden");
+          document.getElementById("bg-color-1-label").innerText =
+            "Первый цвет:";
+          document
+            .getElementById("bg-gradient-details")
+            .classList.remove("hidden");
+
+          backgroundOptions = {
+            gradient: {
+              type: bgGradientType,
+              colorStops: [
+                { offset: 0, color: bgColor1 },
+                { offset: 1, color: bgColor2 },
+              ],
+            },
+          };
+        }
+
+        // Применяем все обновления в объект библиотеки
         qrCode.update({
           data: data,
-          dotsOptions: { color: color, type: dotStyle },
-          cornersSquareOptions: { color: color, type: cornerStyle },
-          cornersDotOptions: { color: color, type: "dot" },
+          image: uploadedLogo,
+          dotsOptions: { color: dotColor, type: dotStyle },
+          backgroundOptions: backgroundOptions,
+          imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: logoSize,
+            margin: 4,
+          },
+          cornersSquareOptions: {
+            color: cornerSquareColor,
+            type: cornerSquareStyle,
+          },
+          cornersDotOptions: { color: cornerDotColor, type: cornerDotStyle },
         });
       }
 
-      // Слушатели событий интерфейса
-      document.getElementById("qr-data").addEventListener("input", updateQR);
-      document.getElementById("qr-color").addEventListener("input", updateQR);
-      document.getElementById("dot-style").addEventListener("change", updateQR);
+      // Навешиваем слушатели событий на ВСЕ элементы управления
+      const inputs = [
+        "qr-data",
+        "dot-style",
+        "dot-color",
+        "corner-square-style",
+        "corner-square-color",
+        "corner-dot-style",
+        "corner-dot-color",
+        "bg-type",
+        "bg-color-1",
+        "bg-color-2",
+        "bg-gradient-type",
+        "logo-size",
+      ];
+
+      inputs.forEach((id) => {
+        const element = document.getElementById(id);
+        element.addEventListener("input", updateQR);
+        element.addEventListener("change", updateQR);
+      });
+
+      // Динамическое изменение текста кнопки при смене расширения
       document
-        .getElementById("corner-style")
-        .addEventListener("change", updateQR);
+        .getElementById("download-ext")
+        .addEventListener("change", function (e) {
+          const ext = e.target.value.toUpperCase();
+          document.getElementById("download-btn").innerText =
+            `Скачать в формате ${ext}`;
+        });
 
       // Обработка загрузки логотипа
       document
@@ -276,17 +518,20 @@
           if (file) {
             const reader = new FileReader();
             reader.onload = function (event) {
-              qrCode.update({
-                image: event.target.result,
-              });
+              uploadedLogo = event.target.result;
+              updateQR();
             };
             reader.readAsDataURL(file);
+          } else {
+            uploadedLogo = "";
+            updateQR();
           }
         });
 
-      // Функция скачивания в PNG
+      // Функция скачивания в выбранном формате
       document.getElementById("download-btn").addEventListener("click", () => {
-        qrCode.download({ name: "qr-code-bodycola", extension: "png" });
+        const ext = document.getElementById("download-ext").value;
+        qrCode.download({ name: "custom-qr-code", extension: ext });
       });
     </script>
   </body>
