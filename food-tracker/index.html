@@ -18,7 +18,6 @@
           Arial, sans-serif;
         background-color: #f3f4f6;
       }
-      /* Скрытие скроллбара для чистоты интерфейса */
       ::-webkit-scrollbar {
         display: none;
       }
@@ -34,6 +33,7 @@
             class="text-xs font-semibold tracking-wider text-gray-400 uppercase"
             >Осознанность</span
           >
+
           <div class="dropdown dropdown-end">
             <div
               tabindex="0"
@@ -51,14 +51,14 @@
             >
               <li>
                 <a onclick="exportData()"
-                  ><i data-lucide="download" class="w-4 h-4"></i> Экспорт
-                  истории (JSON)</a
+                  ><i data-lucide="download" class="w-4 h-4"></i> Экспорт в
+                  JSON</a
                 >
               </li>
               <li>
                 <a onclick="document.getElementById('import_file').click()"
-                  ><i data-lucide="upload" class="w-4 h-4"></i> Импорт
-                  истории</a
+                  ><i data-lucide="upload" class="w-4 h-4"></i> Импорт из
+                  JSON</a
                 >
               </li>
               <input
@@ -73,7 +73,7 @@
         </div>
 
         <h1 id="current-date" class="text-2xl font-bold text-gray-800">
-          Воскресенье, 14 Декабря
+          Загрузка даты...
         </h1>
         <div class="flex items-center gap-2 mt-1 text-sm">
           <span id="entries-count" class="text-gray-400">0 записей</span>
@@ -88,11 +88,21 @@
             Сегодня
           </button>
           <button
+            onclick="
+              alert(
+                'Календарь и аналитика за неделю будут доступны в следующей версии!',
+              )
+            "
             class="flex-1 py-1.5 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-800 transition-all opacity-60"
           >
             Неделя
           </button>
           <button
+            onclick="
+              alert(
+                'Календарь и аналитика за месяц будут доступны в следующей версии!',
+              )
+            "
             class="flex-1 py-1.5 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-800 transition-all opacity-60"
           >
             Месяц
@@ -102,7 +112,7 @@
 
       <div class="flex-1 px-6 pb-32 overflow-y-auto space-y-4">
         <div
-          class="bg-gradient-to-r from-sky-100 to-blue-50 p-4 rounded-2xl shadow-sm border border-sky-200/40 flex justify-between items-center"
+          class="bg-gradient-to-r from-sky-100 to-blue-50 p-4 rounded-2xl shadow-sm border border-sky-200/40 flex justify-between items-center mt-2"
         >
           <div class="flex items-center gap-3">
             <div
@@ -111,9 +121,7 @@
               <i data-lucide="droplet" class="w-5 h-5 fill-current"></i>
             </div>
             <div>
-              <h4 class="font-bold text-slate-800 text-sm">
-                Баланс воды за сегодня
-              </h4>
+              <h4 class="font-bold text-slate-800 text-sm">Водный баланс</h4>
               <p
                 id="water-text"
                 class="text-xs text-sky-700 font-medium mt-0.5"
@@ -146,7 +154,7 @@
         <div
           class="text-[11px] font-bold tracking-wider text-gray-400 uppercase mt-4 mb-2"
         >
-          История за день
+          СЕГОДНЯ
         </div>
 
         <div id="food-list" class="space-y-3">
@@ -156,32 +164,31 @@
           >
             <i data-lucide="utensils" class="w-8 h-8 opacity-40"></i>
             <p class="text-sm">
-              Пока ничего не записано.<br />Нажми плюс внизу, чтобы добавить
-              еду!
+              Вы сегодня еще ничего не записали.<br />Нажмите на плюс внизу!
             </p>
           </div>
         </div>
       </div>
 
-      <div
-        class="absolute bottom-6 left-0 right-0 px-6 z-10 pointer-events-none"
-      >
+      <div class="absolute bottom-6 left-0 right-0 px-6 z-10">
         <div
-          class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-100 p-2 flex justify-between items-center pointer-events-auto"
+          class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-100 p-2 flex justify-between items-center"
         >
           <button
-            class="flex-1 py-2 flex flex-col items-center gap-1 text-indigo-600"
+            class="flex-1 py-2 flex flex-col items-center gap-1 text-slate-900"
           >
             <i data-lucide="home" class="w-5 h-5"></i>
-            <span class="text-[10px] font-medium">Главная</span>
+            <span class="text-[10px] font-semibold">Главная</span>
           </button>
           <button
+            onclick="alert('Раздел Календарь в разработке!')"
             class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600"
           >
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span class="text-[10px] font-medium">Календарь</span>
           </button>
           <button
+            onclick="alert('Раздел Профиль в разработке!')"
             class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600"
           >
             <i data-lucide="user" class="w-5 h-5"></i>
@@ -198,109 +205,113 @@
       </div>
     </div>
 
-    <dialog id="add_modal" class="modal modal-bottom sm:modal-middle">
-      <div class="modal-box bg-white p-6 rounded-t-3xl sm:rounded-3xl">
-        <h3 class="font-bold text-lg text-gray-800 mb-4">Что ты съел(а)?</h3>
+    <div
+      id="add_modal"
+      class="modal modal-bottom sm:modal-middle pointer-events-none opacity-0 transition-all duration-200 z-50 flex items-end sm:items-center justify-center fixed inset-0 bg-black/40"
+    >
+      <div
+        class="bg-white p-6 rounded-t-3xl sm:rounded-3xl w-full max-w-md transform translate-y-10 transition-all duration-200 space-y-4 inner-modal shadow-2xl"
+      >
+        <h3 class="font-bold text-lg text-gray-800">Новая запись еды</h3>
 
-        <div class="space-y-4">
-          <div>
-            <label
-              class="label-text text-xs font-semibold text-gray-400 uppercase"
-              >Категория</label
-            >
-            <div class="grid grid-cols-4 gap-2 mt-1.5">
-              <button
-                type="button"
-                onclick="setCategory('breakfast', this)"
-                class="cat-btn btn btn-sm btn-outline border-gray-200 bg-orange-50 text-orange-700 border-orange-200"
-              >
-                Завтрак
-              </button>
-              <button
-                type="button"
-                onclick="setCategory('lunch', this)"
-                class="cat-btn btn btn-sm btn-outline border-gray-200"
-              >
-                Обед
-              </button>
-              <button
-                type="button"
-                onclick="setCategory('dinner', this)"
-                class="cat-btn btn btn-sm btn-outline border-gray-200"
-              >
-                Ужин
-              </button>
-              <button
-                type="button"
-                onclick="setCategory('snack', this)"
-                class="cat-btn btn btn-sm btn-outline border-gray-200"
-              >
-                Перекус
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label
-              class="label-text text-xs font-semibold text-gray-400 uppercase"
-              >Описание пищи</label
-            >
-            <textarea
-              id="food-text"
-              class="textarea textarea-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none focus:border-slate-400"
-              placeholder="Например: Рис с лососем и авокадо..."
-              rows="2"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                class="label-text text-xs font-semibold text-gray-400 uppercase"
-                >Время</label
-              >
-              <input
-                type="time"
-                id="food-time"
-                class="input input-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label
-                class="label-text text-xs font-semibold text-gray-400 uppercase"
-                >Фото тарелки</label
-              >
-              <button
-                onclick="document.getElementById('photo-input').click()"
-                class="btn btn-outline border-gray-200 w-full mt-1.5 btn-md bg-slate-50 text-gray-600 font-normal"
-              >
-                <i data-lucide="camera" class="w-4 h-4 mr-1"></i> Снимок
-              </button>
-              <input
-                type="file"
-                id="photo-input"
-                accept="image/*"
-                class="hidden"
-                onchange="handlePhotoUpload(event)"
-              />
-            </div>
-          </div>
-
-          <div
-            id="photo-preview-container"
-            class="hidden relative w-full h-32 rounded-xl overflow-hidden mt-2"
+        <div>
+          <label
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+            >Категория</label
           >
-            <img id="photo-preview" src="" class="w-full h-full object-cover" />
+          <div class="grid grid-cols-4 gap-2 mt-1.5">
             <button
-              onclick="clearPhoto()"
-              class="absolute top-2 right-2 btn btn-circle btn-xs btn-error text-white"
+              type="button"
+              onclick="setCategory('breakfast', this)"
+              class="cat-btn btn btn-sm bg-orange-500 text-white border-none"
             >
-              ✕
+              Завтрак
+            </button>
+            <button
+              type="button"
+              onclick="setCategory('lunch', this)"
+              class="cat-btn btn btn-sm btn-outline border-gray-200 text-gray-600"
+            >
+              Обед
+            </button>
+            <button
+              type="button"
+              onclick="setCategory('dinner', this)"
+              class="cat-btn btn btn-sm btn-outline border-gray-200 text-gray-600"
+            >
+              Ужин
+            </button>
+            <button
+              type="button"
+              onclick="setCategory('snack', this)"
+              class="cat-btn btn btn-sm btn-outline border-gray-200 text-gray-600"
+            >
+              Перекус
             </button>
           </div>
         </div>
 
-        <div class="modal-action mt-6">
+        <div>
+          <label
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+            >Что вы съели?</label
+          >
+          <textarea
+            id="food-text"
+            class="textarea textarea-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none focus:border-slate-400 text-base"
+            placeholder="Например: Рис с рыбой и огурец..."
+            rows="2"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+              >Время</label
+            >
+            <input
+              type="time"
+              id="food-time"
+              class="input input-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label
+              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+              >Фотофиксация</label
+            >
+            <button
+              onclick="document.getElementById('photo-input').click()"
+              class="btn btn-outline border-gray-200 w-full mt-1.5 bg-slate-50 text-gray-600 font-normal"
+            >
+              <i data-lucide="camera" class="w-4 h-4 mr-1"></i> Снимок
+            </button>
+            <input
+              type="file"
+              id="photo-input"
+              accept="image/*"
+              class="hidden"
+              onchange="handlePhotoUpload(event)"
+            />
+          </div>
+        </div>
+
+        <div
+          id="photo-preview-container"
+          class="hidden relative w-full h-32 rounded-xl overflow-hidden bg-slate-100 border"
+        >
+          <img id="photo-preview" src="" class="w-full h-full object-cover" />
+          <button
+            onclick="clearPhoto()"
+            class="absolute top-2 right-2 bg-red-500 text-white w-6"
+            style="border-radius: 50%"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
           <button onclick="closeAddModal()" class="btn btn-ghost text-gray-400">
             Отмена
           </button>
@@ -312,10 +323,10 @@
           </button>
         </div>
       </div>
-    </dialog>
+    </div>
 
     <script>
-      // Конфигурация категорий для красивого рендеринга
+      // Иконки и цвета для рендеринга карточек
       const categories = {
         breakfast: {
           title: "Завтрак",
@@ -330,7 +341,7 @@
         dinner: {
           title: "Ужин",
           icon: "moon",
-          color: "bg-indigo-900 text-white",
+          color: "bg-indigo-950 text-white",
         },
         snack: {
           title: "Перекус",
@@ -339,28 +350,34 @@
         },
       };
 
-      // Состояние приложения
       let currentCategory = "breakfast";
       let currentPhotoBase64 = null;
+
+      // Загрузка данных
       let foodEntries = JSON.parse(localStorage.getItem("foodEntries")) || [];
       let waterLogs = JSON.parse(localStorage.getItem("waterLogs")) || {};
 
-      // Форматирование текущей даты для шапки
+      // Безопасное обновление иконок Lucide
+      function safeRenderIcons() {
+        if (typeof lucide !== "undefined") {
+          lucide.createIcons();
+        }
+      }
+
+      // Форматирование даты вверху экрана
       function updateHeaderDate() {
         const options = { weekday: "long", month: "long", day: "numeric" };
         let dateStr = new Date().toLocaleDateString("ru-RU", options);
-        // Делаем первую букву заглавной
         dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         document.getElementById("current-date").innerText = dateStr;
       }
 
-      // Получить текущую дату в формате YYYY-MM-DD
       function getTodayKey() {
         const d = new Date();
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       }
 
-      // Логика трекера воды
+      // --- ВОДА ---
       function initWater() {
         const today = getTodayKey();
         const count = waterLogs[today] || 0;
@@ -384,29 +401,40 @@
         return "ов";
       }
 
-      // Открытие и закрытие модалки добавления еды
+      // --- МОДАЛЬНОЕ ОКНО (Новый CSS метод без багов) ---
       function openAddModal() {
         const now = new Date();
         const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
         document.getElementById("food-time").value = currentTime;
         document.getElementById("food-text").value = "";
         clearPhoto();
-        setCategory("breakfast", document.querySelectorAll(".cat-btn")[0]);
-        document.getElementById("add_modal").showModal();
+
+        // Сброс на Завтрак по умолчанию
+        const firstBtn = document.querySelectorAll(".cat-btn")[0];
+        setCategory("breakfast", firstBtn);
+
+        // Показываем окно
+        const modal = document.getElementById("add_modal");
+        modal.classList.remove("pointer-events-none", "opacity-0");
+        modal.classList.add("pointer-events-auto", "opacity-100");
+        modal.querySelector(".inner-modal").classList.remove("translate-y-10");
       }
 
       function closeAddModal() {
-        document.getElementById("add_modal").close();
+        const modal = document.getElementById("add_modal");
+        modal.classList.add("pointer-events-none", "opacity-0");
+        modal.classList.remove("pointer-events-auto", "opacity-100");
+        modal.querySelector(".inner-modal").classList.add("translate-y-10");
       }
 
-      // Выбор категории в форме
       function setCategory(cat, element) {
         currentCategory = cat;
         document.querySelectorAll(".cat-btn").forEach((btn) => {
           btn.className =
             "cat-btn btn btn-sm btn-outline border-gray-200 text-gray-600";
         });
-        // Назначаем класс выбранной кнопки под стиль daisyUI
+
         if (cat === "breakfast")
           element.className =
             "cat-btn btn btn-sm bg-orange-500 text-white border-none";
@@ -415,13 +443,13 @@
             "cat-btn btn btn-sm bg-amber-500 text-white border-none";
         if (cat === "dinner")
           element.className =
-            "cat-btn btn btn-sm bg-indigo-900 text-white border-none";
+            "cat-btn btn btn-sm bg-indigo-950 text-white border-none";
         if (cat === "snack")
           element.className =
             "cat-btn btn btn-sm bg-emerald-500 text-white border-none";
       }
 
-      // Обработка и сжатие фотографии (Base64)
+      // --- ФОТО ---
       function handlePhotoUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -445,28 +473,28 @@
           .classList.add("hidden");
       }
 
-      // Сохранение записи в LocalStorage
+      // --- СОХРАНЕНИЕ И УДАЛЕНИЕ ---
       function saveFoodEntry() {
-        const text = document.getElementById("food-text").value.trim();
-        const time = document.getElementById("food-time").value;
+        const textValue = document.getElementById("food-text").value.trim();
+        const timeValue = document.getElementById("food-time").value;
         const today = getTodayKey();
 
-        if (!text && !currentPhotoBase64) {
-          alert("Пожалуйста, напиши пару слов о еде или сделай фото!");
+        if (!textValue && !currentPhotoBase64) {
+          alert("Пожалуйста, напишите что вы съели или сделайте фото тарелки!");
           return;
         }
 
         const newEntry = {
           id: Date.now().toString(),
           date: today,
-          time: time,
-          text: text || "Прием пищи без описания",
+          time: timeValue || "00:00",
+          text: textValue || "Прием пищи без описания",
           category: currentCategory,
           photo: currentPhotoBase64,
         };
 
         foodEntries.push(newEntry);
-        // Сортировка по времени
+        // Сортировка по времени (чтобы завтрак шел перед обедом)
         foodEntries.sort((a, b) => a.time.localeCompare(b.time));
 
         localStorage.setItem("foodEntries", JSON.stringify(foodEntries));
@@ -475,21 +503,18 @@
         renderFoodList();
       }
 
-      // Удаление записи
       function deleteEntry(id) {
-        if (confirm("Удалить эту запись из дневника?")) {
+        if (confirm("Вы уверены, что хотите удалить эту запись из дневника?")) {
           foodEntries = foodEntries.filter((entry) => entry.id !== id);
           localStorage.setItem("foodEntries", JSON.stringify(foodEntries));
           renderFoodList();
         }
       }
 
-      // Рендеринг списка приемов пищи
+      // --- РЕНДЕРИНГ СПИСКА НА ЭКРАНЕ ---
       function renderFoodList() {
         const listContainer = document.getElementById("food-list");
         const today = getTodayKey();
-
-        // Фильтруем только сегодняшние записи
         const todaysEntries = foodEntries.filter(
           (entry) => entry.date === today,
         );
@@ -497,56 +522,47 @@
         document.getElementById("entries-count").innerText =
           `${todaysEntries.length} записей`;
 
+        // Очищаем старые карточки, кроме дефолтной пустой плашки
+        const oldCards = listContainer.querySelectorAll(".food-card");
+        oldCards.forEach((card) => card.remove());
+
         if (todaysEntries.length === 0) {
           document.getElementById("empty-state").classList.remove("hidden");
-          // Очищаем старые элементы, оставляя empty state
-          const children = Array.from(listContainer.children);
-          children.forEach((child) => {
-            if (child.id !== "empty-state") child.remove();
-          });
-          lucide.createIcons();
+          safeRenderIcons();
           return;
         }
 
         document.getElementById("empty-state").classList.add("hidden");
-
-        // Удаляем старые карточки перед перерендером
-        const cards = listContainer.querySelectorAll(".food-card");
-        cards.forEach((card) => card.remove());
 
         todaysEntries.forEach((entry) => {
           const catConfig = categories[entry.category] || categories.snack;
 
           const card = document.createElement("div");
           card.className =
-            "food-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100/80 flex justify-between items-center gap-4 transition-all hover:shadow-md relative group";
+            "food-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center gap-3 transition-all hover:shadow-md";
 
           card.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
                         <div class="w-11 h-11 rounded-full ${catConfig.color} flex items-center justify-center shrink-0 shadow-sm">
                             <i data-lucide="${catConfig.icon}" class="w-5 h-5"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="font-bold text-gray-800 text-[15px] break-words leading-tight">${entry.text}</h3>
-                            <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                <span>${catConfig.title}</span>
-                                <span>•</span>
-                                <span>${entry.time}</span>
-                            </p>
+                            <p class="text-xs text-gray-400 mt-0.5">${catConfig.title} • ${entry.time}</p>
                         </div>
                     </div>
                     
                     ${
                       entry.photo
                         ? `
-                        <div class="w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-gray-100 shadow-inner">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-gray-100 shadow-inner">
                             <img src="${entry.photo}" class="w-full h-full object-cover">
                         </div>
                     `
                         : ""
                     }
 
-                    <button onclick="deleteEntry('${entry.id}')" class="btn btn-ghost btn-xs btn-circle text-gray-300 hover:text-red-500">
+                    <button onclick="deleteEntry('${entry.id}')" class="btn btn-ghost btn-xs btn-circle text-gray-300 hover:text-red-500 shrink-0">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 `;
@@ -554,33 +570,26 @@
           listContainer.appendChild(card);
         });
 
-        // Обновляем иконки Lucide для новых элементов
-        lucide.createIcons();
+        safeRenderIcons();
       }
 
-      // ЭКСПОРТ ДАННЫХ В JSON (Резервное копирование)
+      // --- РЕЗЕРВНОЕ КОПИРОВАНИЕ (JSON) ---
       function exportData() {
-        const dataToExport = {
-          foodEntries: foodEntries,
-          waterLogs: waterLogs,
-          exportedAt: new Date().toISOString(),
-        };
-
+        if (foodEntries.length === 0) {
+          alert("Нечего экспортировать, дневник пока пуст!");
+          return;
+        }
         const dataStr =
           "data:text/json;charset=utf-8," +
-          encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+          encodeURIComponent(JSON.stringify({ foodEntries, waterLogs }));
         const downloadAnchor = document.createElement("a");
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute(
-          "download",
-          `food_tracker_backup_${getTodayKey()}.json`,
-        );
+        downloadAnchor.setAttribute("download", `food_tracker_backup.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
       }
 
-      // ИМПОРТ ДАННЫХ ИЗ JSON
       function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -594,25 +603,25 @@
               waterLogs = parsed.waterLogs || {};
               localStorage.setItem("foodEntries", JSON.stringify(foodEntries));
               localStorage.setItem("waterLogs", JSON.stringify(waterLogs));
-              alert("История успешно импортирована!");
-              // Перезапуск интерфейса
+              alert("История успешно восстановлена!");
               initWater();
               renderFoodList();
             } else {
-              alert("Неверный формат файла бэкапа.");
+              alert("Неверный формат резервного файла.");
             }
           } catch (err) {
-            alert("Ошибка при чтении файла JSON.");
+            alert("Ошибка при чтении JSON-файла.");
           }
         };
         reader.readAsText(file);
       }
 
-      // Запуск при загрузке страницы
-      updateHeaderDate();
-      initWater();
-      renderFoodList();
-      lucide.createIcons();
+      // Запуск при загрузке
+      window.onload = function () {
+        updateHeaderDate();
+        initWater();
+        renderFoodList();
+      };
     </script>
   </body>
 </html>
