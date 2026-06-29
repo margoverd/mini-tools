@@ -78,31 +78,29 @@
         <div class="flex items-center gap-2 mt-1 text-sm">
           <span id="entries-count" class="text-gray-400">0 записей</span>
           <span class="text-gray-300">•</span>
-          <span class="text-green-500 font-medium">Отличный баланс</span>
+          <span id="status-badge" class="text-green-500 font-medium"
+            >Отличный баланс</span
+          >
         </div>
 
         <div class="flex bg-gray-200/60 p-1 rounded-xl mt-4 gap-1">
           <button
+            id="tab-today"
+            onclick="switchView('today')"
             class="flex-1 py-1.5 text-sm font-medium rounded-lg bg-white text-gray-800 shadow-sm transition-all"
           >
             Сегодня
           </button>
           <button
-            onclick="
-              alert(
-                'Календарь и аналитика за неделю будут доступны в следующей версии!',
-              )
-            "
+            id="tab-week"
+            onclick="switchView('week')"
             class="flex-1 py-1.5 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-800 transition-all opacity-60"
           >
             Неделя
           </button>
           <button
-            onclick="
-              alert(
-                'Календарь и аналитика за месяц будут доступны в следующей версии!',
-              )
-            "
+            id="tab-month"
+            onclick="switchView('month')"
             class="flex-1 py-1.5 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-800 transition-all opacity-60"
           >
             Месяц
@@ -151,19 +149,13 @@
           </div>
         </div>
 
-        <div
-          class="text-[11px] font-bold tracking-wider text-gray-400 uppercase mt-4 mb-2"
-        >
-          СЕГОДНЯ
-        </div>
-
-        <div id="food-list" class="space-y-3">
+        <div id="food-list" class="space-y-3 pt-2">
           <div
             id="empty-state"
             class="text-center py-12 text-gray-400 flex flex-col items-center justify-center gap-2"
           >
             <i data-lucide="utensils" class="w-8 h-8 opacity-40"></i>
-            <p class="text-sm">
+            <p id="empty-state-text" class="text-sm">
               Вы сегодня еще ничего не записали.<br />Нажмите на плюс внизу!
             </p>
           </div>
@@ -175,18 +167,19 @@
           class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-100 p-2 flex justify-between items-center"
         >
           <button
+            onclick="switchView('today')"
             class="flex-1 py-2 flex flex-col items-center gap-1 text-slate-900"
           >
             <i data-lucide="home" class="w-5 h-5"></i>
             <span class="text-[10px] font-semibold">Главная</span>
           </button>
-          <button
-            onclick="alert('Раздел Календарь в разработке!')"
-            class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600"
+          <a
+            href="calendar.html"
+            class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-900 transition-all"
           >
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span class="text-[10px] font-medium">Календарь</span>
-          </button>
+          </a>
           <button
             onclick="alert('Раздел Профиль в разработке!')"
             class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600"
@@ -207,10 +200,10 @@
 
     <div
       id="add_modal"
-      class="modal modal-bottom sm:modal-middle pointer-events-none opacity-0 transition-all duration-200 z-50 flex items-end sm:items-center justify-center fixed inset-0 bg-black/40"
+      class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
     >
       <div
-        class="bg-white p-6 rounded-t-3xl sm:rounded-3xl w-full max-w-md transform translate-y-10 transition-all duration-200 space-y-4 inner-modal shadow-2xl"
+        class="bg-white p-6 rounded-t-3xl sm:rounded-3xl w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         <h3 class="font-bold text-lg text-gray-800">Новая запись еды</h3>
 
@@ -268,6 +261,17 @@
           <div>
             <label
               class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+              >Дата</label
+            >
+            <input
+              type="date"
+              id="food-date"
+              class="input input-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label
+              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
               >Время</label
             >
             <input
@@ -276,25 +280,28 @@
               class="input input-bordered w-full mt-1.5 bg-slate-50 border-gray-200 text-gray-800 focus:outline-none"
             />
           </div>
-          <div>
-            <label
-              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
-              >Фотофиксация</label
-            >
-            <button
-              onclick="document.getElementById('photo-input').click()"
-              class="btn btn-outline border-gray-200 w-full mt-1.5 bg-slate-50 text-gray-600 font-normal"
-            >
-              <i data-lucide="camera" class="w-4 h-4 mr-1"></i> Снимок
-            </button>
-            <input
-              type="file"
-              id="photo-input"
-              accept="image/*"
-              class="hidden"
-              onchange="handlePhotoUpload(event)"
-            />
-          </div>
+        </div>
+
+        <div>
+          <label
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
+            >Фото тарелки</label
+          >
+          <button
+            type="button"
+            onclick="document.getElementById('photo-input').click()"
+            class="btn btn-outline border-gray-200 w-full mt-1.5 bg-slate-50 text-gray-600 font-normal"
+          >
+            <i data-lucide="camera" class="w-4 h-4 mr-1"></i> Снимок / Загрузить
+            файл
+          </button>
+          <input
+            type="file"
+            id="photo-input"
+            accept="image/*"
+            class="hidden"
+            onchange="handlePhotoUpload(event)"
+          />
         </div>
 
         <div
@@ -303,19 +310,24 @@
         >
           <img id="photo-preview" src="" class="w-full h-full object-cover" />
           <button
+            type="button"
             onclick="clearPhoto()"
-            class="absolute top-2 right-2 bg-red-500 text-white w-6"
-            style="border-radius: 50%"
+            class="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center font-bold z-30 rounded-full"
           >
             ✕
           </button>
         </div>
 
-        <div class="flex justify-end gap-2 pt-2">
-          <button onclick="closeAddModal()" class="btn btn-ghost text-gray-400">
+        <div class="flex justify-end gap-2 pt-2 relative z-20">
+          <button
+            type="button"
+            onclick="closeAddModal()"
+            class="btn btn-ghost text-gray-400"
+          >
             Отмена
           </button>
           <button
+            type="button"
             onclick="saveFoodEntry()"
             class="btn bg-slate-900 text-white hover:bg-slate-800 px-6"
           >
@@ -326,7 +338,6 @@
     </div>
 
     <script>
-      // Иконки и цвета для рендеринга карточек
       const categories = {
         breakfast: {
           title: "Завтрак",
@@ -352,19 +363,15 @@
 
       let currentCategory = "breakfast";
       let currentPhotoBase64 = null;
+      let currentView = "today";
 
-      // Загрузка данных
       let foodEntries = JSON.parse(localStorage.getItem("foodEntries")) || [];
       let waterLogs = JSON.parse(localStorage.getItem("waterLogs")) || {};
 
-      // Безопасное обновление иконок Lucide
       function safeRenderIcons() {
-        if (typeof lucide !== "undefined") {
-          lucide.createIcons();
-        }
+        if (typeof lucide !== "undefined") lucide.createIcons();
       }
 
-      // Форматирование даты вверху экрана
       function updateHeaderDate() {
         const options = { weekday: "long", month: "long", day: "numeric" };
         let dateStr = new Date().toLocaleDateString("ru-RU", options);
@@ -377,7 +384,51 @@
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       }
 
-      // --- ВОДА ---
+      function parseDateKey(dateStr) {
+        const parts = dateStr.split("-");
+        return new Date(
+          parseInt(parts[0]),
+          parseInt(parts[1]) - 1,
+          parseInt(parts[2]),
+        );
+      }
+
+      function getDaysDiffFromToday(dateStr) {
+        const entryDate = parseDateKey(dateStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        entryDate.setHours(0, 0, 0, 0);
+        const diffTime = today - entryDate;
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      }
+
+      function formatDateLabel(dateStr) {
+        if (dateStr === getTodayKey()) return "Сегодня";
+        if (getDaysDiffFromToday(dateStr) === 1) return "Вчера";
+
+        const date = parseDateKey(dateStr);
+        const options = { weekday: "short", month: "long", day: "numeric" };
+        let str = date.toLocaleDateString("ru-RU", options);
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+
+      function switchView(view) {
+        currentView = view;
+
+        const tabs = ["today", "week", "month"];
+        tabs.forEach((t) => {
+          const btn = document.getElementById(`tab-${t}`);
+          btn.className =
+            "flex-1 py-1.5 text-sm font-medium rounded-lg text-gray-500 hover:text-gray-800 transition-all opacity-60";
+        });
+
+        const activeBtn = document.getElementById(`tab-${view}`);
+        activeBtn.className =
+          "flex-1 py-1.5 text-sm font-medium rounded-lg bg-white text-gray-800 shadow-sm transition-all";
+
+        renderFoodList();
+      }
+
       function initWater() {
         const today = getTodayKey();
         const count = waterLogs[today] || 0;
@@ -401,31 +452,25 @@
         return "ов";
       }
 
-      // --- МОДАЛЬНОЕ ОКНО (Новый CSS метод без багов) ---
+      // --- УПРАВЛЕНИЕ МОДАЛКОЙ ЧЕРЕЗ HIDDEN БЕЗ БАГОВ ПОЗИЦИОНИРОВАНИЯ ---
       function openAddModal() {
         const now = new Date();
         const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
+        document.getElementById("food-date").value = getTodayKey();
         document.getElementById("food-time").value = currentTime;
         document.getElementById("food-text").value = "";
         clearPhoto();
 
-        // Сброс на Завтрак по умолчанию
-        const firstBtn = document.querySelectorAll(".cat-btn")[0];
-        setCategory("breakfast", firstBtn);
+        setCategory("breakfast", document.querySelectorAll(".cat-btn")[0]);
 
-        // Показываем окно
         const modal = document.getElementById("add_modal");
-        modal.classList.remove("pointer-events-none", "opacity-0");
-        modal.classList.add("pointer-events-auto", "opacity-100");
-        modal.querySelector(".inner-modal").classList.remove("translate-y-10");
+        modal.classList.remove("hidden");
       }
 
       function closeAddModal() {
         const modal = document.getElementById("add_modal");
-        modal.classList.add("pointer-events-none", "opacity-0");
-        modal.classList.remove("pointer-events-auto", "opacity-100");
-        modal.querySelector(".inner-modal").classList.add("translate-y-10");
+        modal.classList.add("hidden");
       }
 
       function setCategory(cat, element) {
@@ -449,7 +494,6 @@
             "cat-btn btn btn-sm bg-emerald-500 text-white border-none";
       }
 
-      // --- ФОТО ---
       function handlePhotoUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -473,30 +517,27 @@
           .classList.add("hidden");
       }
 
-      // --- СОХРАНЕНИЕ И УДАЛЕНИЕ ---
       function saveFoodEntry() {
         const textValue = document.getElementById("food-text").value.trim();
         const timeValue = document.getElementById("food-time").value;
-        const today = getTodayKey();
+        const dateValue =
+          document.getElementById("food-date").value || getTodayKey();
 
         if (!textValue && !currentPhotoBase64) {
-          alert("Пожалуйста, напишите что вы съели или сделайте фото тарелки!");
+          alert("Пожалуйста, напишите что вы съели или прикрепите фото!");
           return;
         }
 
         const newEntry = {
           id: Date.now().toString(),
-          date: today,
+          date: dateValue,
           time: timeValue || "00:00",
-          text: textValue || "Прием пищи без описания",
+          text: textValue || "Прием пищи",
           category: currentCategory,
           photo: currentPhotoBase64,
         };
 
         foodEntries.push(newEntry);
-        // Сортировка по времени (чтобы завтрак шел перед обедом)
-        foodEntries.sort((a, b) => a.time.localeCompare(b.time));
-
         localStorage.setItem("foodEntries", JSON.stringify(foodEntries));
 
         closeAddModal();
@@ -504,39 +545,72 @@
       }
 
       function deleteEntry(id) {
-        if (confirm("Вы уверены, что хотите удалить эту запись из дневника?")) {
+        if (confirm("Удалить эту запись?")) {
           foodEntries = foodEntries.filter((entry) => entry.id !== id);
           localStorage.setItem("foodEntries", JSON.stringify(foodEntries));
           renderFoodList();
         }
       }
 
-      // --- РЕНДЕРИНГ СПИСКА НА ЭКРАНЕ ---
       function renderFoodList() {
         const listContainer = document.getElementById("food-list");
-        const today = getTodayKey();
-        const todaysEntries = foodEntries.filter(
-          (entry) => entry.date === today,
-        );
+
+        let filtered = [];
+        let emptyText = "";
+
+        if (currentView === "today") {
+          filtered = foodEntries.filter((e) => e.date === getTodayKey());
+          emptyText =
+            "Вы сегодня еще ничего не записали.<br>Нажмите на плюс внизу!";
+        } else if (currentView === "week") {
+          filtered = foodEntries.filter((e) => {
+            const diff = getDaysDiffFromToday(e.date);
+            return diff >= 0 && diff < 7;
+          });
+          emptyText = "За последние 7 дней записей не найдено.";
+        } else if (currentView === "month") {
+          filtered = foodEntries.filter((e) => {
+            const diff = getDaysDiffFromToday(e.date);
+            return diff >= 0 && diff < 30;
+          });
+          emptyText = "За последние 30 дней записей не найдено.";
+        }
 
         document.getElementById("entries-count").innerText =
-          `${todaysEntries.length} записей`;
+          `${filtered.length} записей`;
 
-        // Очищаем старые карточки, кроме дефолтной пустой плашки
-        const oldCards = listContainer.querySelectorAll(".food-card");
-        oldCards.forEach((card) => card.remove());
+        const oldElements = listContainer.querySelectorAll(
+          ".food-card, .date-group-header",
+        );
+        oldElements.forEach((el) => el.remove());
 
-        if (todaysEntries.length === 0) {
+        if (filtered.length === 0) {
           document.getElementById("empty-state").classList.remove("hidden");
+          document.getElementById("empty-state-text").innerHTML = emptyText;
           safeRenderIcons();
           return;
         }
 
         document.getElementById("empty-state").classList.add("hidden");
 
-        todaysEntries.forEach((entry) => {
-          const catConfig = categories[entry.category] || categories.snack;
+        filtered.sort((a, b) => {
+          if (a.date !== b.date) return b.date.localeCompare(a.date);
+          return a.time.localeCompare(b.time);
+        });
 
+        let lastDateGroup = "";
+
+        filtered.forEach((entry) => {
+          if (entry.date !== lastDateGroup) {
+            lastDateGroup = entry.date;
+            const header = document.createElement("div");
+            header.className =
+              "date-group-header text-[11px] font-bold tracking-wider text-gray-400 uppercase mt-5 mb-2 first:mt-1";
+            header.innerText = formatDateLabel(entry.date);
+            listContainer.appendChild(header);
+          }
+
+          const catConfig = categories[entry.category] || categories.snack;
           const card = document.createElement("div");
           card.className =
             "food-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center gap-3 transition-all hover:shadow-md";
@@ -573,7 +647,6 @@
         safeRenderIcons();
       }
 
-      // --- РЕЗЕРВНОЕ КОПИРОВАНИЕ (JSON) ---
       function exportData() {
         if (foodEntries.length === 0) {
           alert("Нечего экспортировать, дневник пока пуст!");
@@ -605,7 +678,7 @@
               localStorage.setItem("waterLogs", JSON.stringify(waterLogs));
               alert("История успешно восстановлена!");
               initWater();
-              renderFoodList();
+              switchView("today");
             } else {
               alert("Неверный формат резервного файла.");
             }
@@ -616,7 +689,6 @@
         reader.readAsText(file);
       }
 
-      // Запуск при загрузке
       window.onload = function () {
         updateHeaderDate();
         initWater();

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Tracker - Календарь</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.400.0/dist/umd/lucide.min.js"></script>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #f3f4f6;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="flex justify-center min-h-screen items-start sm:py-8">
+    <div
+      class="w-full max-w-md bg-slate-50 min-h-screen sm:min-h-[850px] sm:rounded-[40px] sm:shadow-2xl flex flex-col relative overflow-hidden border border-gray-100"
+    >
+      <div class="p-6 pb-3 bg-slate-50 sticky top-0 z-10">
+        <span
+          class="text-xs font-semibold tracking-wider text-gray-400 uppercase"
+          >Архив записей</span
+        >
+        <h1 class="text-2xl font-bold text-gray-800 mt-1">
+          Календарь осознанности
+        </h1>
+
+        <div
+          class="flex justify-between items-center bg-white border border-gray-100 p-2 rounded-2xl shadow-sm mt-4"
+        >
+          <button
+            onclick="changeMonth(-1)"
+            class="btn btn-ghost btn-sm btn-circle text-gray-600"
+          >
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <span id="month-year-title" class="font-bold text-gray-700 text-base"
+            >Декабрь 2026</span
+          >
+          <button
+            onclick="changeMonth(1)"
+            class="btn btn-ghost btn-sm btn-circle text-gray-600"
+          >
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 px-6 pb-32 overflow-y-auto space-y-6">
+        <div
+          class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100/80"
+        >
+          <div
+            class="grid grid-cols-7 text-center text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"
+          >
+            <div>Пн</div>
+            <div>Вт</div>
+            <div>Ср</div>
+            <div>Чт</div>
+            <div>Пт</div>
+            <div class="text-red-400">Сб</div>
+            <div class="text-red-400">Вс</div>
+          </div>
+          <div
+            id="calendar-grid"
+            class="grid grid-cols-7 gap-y-2 text-center text-sm font-medium"
+          ></div>
+        </div>
+
+        <div class="border-t border-gray-200/60 pt-2">
+          <div
+            id="selected-day-title"
+            class="text-xs font-bold tracking-wider text-gray-400 uppercase mb-3"
+          >
+            ДЕТАЛИЗАЦИЯ ДНЯ
+          </div>
+
+          <div
+            id="day-water-block"
+            class="hidden bg-sky-50/60 p-3 rounded-xl border border-sky-100/50 flex items-center gap-3 mb-3 text-sky-800 text-xs font-medium"
+          >
+            <i
+              data-lucide="droplet"
+              class="w-4 h-4 text-sky-500 fill-current"
+            ></i>
+            <span id="day-water-text">В этот день выпито: 0 стаканов воды</span>
+          </div>
+
+          <div id="day-food-list" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-6 left-0 right-0 px-6 z-10">
+        <div
+          class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-gray-100 p-2 flex justify-between items-center"
+        >
+          <a
+            href="index.html"
+            class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-slate-900 transition-all"
+          >
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span class="text-[10px] font-medium">Главная</span>
+          </a>
+          <button
+            class="flex-1 py-2 flex flex-col items-center gap-1 text-slate-900"
+          >
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Календарь</span>
+          </button>
+          <button
+            onclick="alert('Раздел Профиль в разработке!')"
+            class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600"
+          >
+            <i data-lucide="user" class="w-5 h-5"></i>
+            <span class="text-[10px] font-medium">Профиль</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Конфигурация категорий (такая же, как на главной)
+      const categories = {
+        breakfast: {
+          title: "Завтрак",
+          icon: "sun",
+          color: "bg-orange-500 text-white",
+        },
+        lunch: {
+          title: "Обед",
+          icon: "cloud-sun",
+          color: "bg-amber-500 text-white",
+        },
+        dinner: {
+          title: "Ужин",
+          icon: "moon",
+          color: "bg-indigo-950 text-white",
+        },
+        snack: {
+          title: "Перекус",
+          icon: "leaf",
+          color: "bg-emerald-500 text-white",
+        },
+      };
+
+      const monthNames = [
+        "Январь",
+        "Февраль",
+        "Март",
+        "Апрель",
+        "Май",
+        "Июнь",
+        "Июль",
+        "Август",
+        "Сентябрь",
+        "Октябрь",
+        "Ноябрь",
+        "Декабрь",
+      ];
+
+      // Инициализация календаря на текущую дату
+      let displayDate = new Date();
+      let selectedDateKey = getFormattedKey(new Date());
+
+      // База данных из LocalStorage
+      let foodEntries = JSON.parse(localStorage.getItem("foodEntries")) || [];
+      let waterLogs = JSON.parse(localStorage.getItem("waterLogs")) || {};
+
+      function safeRenderIcons() {
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+
+      // Приведение даты к строке формата YYYY-MM-DD
+      function getFormattedKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+
+      // Переключение месяцев
+      function changeMonth(direction) {
+        displayDate.setMonth(displayDate.getMonth() + direction);
+        renderCalendar();
+      }
+
+      // Сборка календаря
+      function renderCalendar() {
+        const grid = document.getElementById("calendar-grid");
+        grid.innerHTML = "";
+
+        const year = displayDate.getFullYear();
+        const month = displayDate.getMonth();
+
+        // Пишем заголовок текущего месяца
+        document.getElementById("month-year-title").innerText =
+          `${monthNames[month]} ${year}`;
+
+        // Вычисляем отступы (какой день недели первый день месяца)
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        // Превращаем воскресенье (0) в 7-й день, чтобы сетка шла с Пн
+        const shift = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+        const totalDays = new Date(year, month + 1, 0).getDate();
+
+        // 1. Отрисовка пустых ячеек до первого дня месяца
+        for (let i = 0; i < shift; i++) {
+          const emptyCell = document.createElement("div");
+          grid.appendChild(emptyCell);
+        }
+
+        // 2. Отрисовка дней месяца
+        const todayKey = getFormattedKey(new Date());
+
+        for (let day = 1; day <= totalDays; day++) {
+          const currentLoopDate = new Date(year, month, day);
+          const dateKey = getFormattedKey(currentLoopDate);
+
+          // Проверяем наличие записей еды в этот день
+          const hasEntries = foodEntries.some((e) => e.date === dateKey);
+
+          // Создаем контейнер дня
+          const dayCell = document.createElement("div");
+          dayCell.className =
+            "flex flex-col items-center justify-center h-11 relative cursor-pointer rounded-xl transition-all select-none";
+
+          // Стилизация выбранного или сегодняшнего дня
+          if (dateKey === selectedDateKey) {
+            // Выбранный день
+            dayCell.classList.add("bg-slate-900", "text-white", "shadow-sm");
+          } else if (dateKey === todayKey) {
+            // Текущий день сегодня
+            dayCell.classList.add(
+              "bg-indigo-50",
+              "text-indigo-600",
+              "border",
+              "border-indigo-200",
+            );
+          } else {
+            // Обычный день
+            dayCell.classList.add("hover:bg-slate-100", "text-gray-700");
+          }
+
+          // Номер дня
+          const dayNumber = document.createElement("span");
+          dayNumber.className = "text-sm font-bold leading-none";
+          dayNumber.innerText = day;
+          dayCell.appendChild(dayNumber);
+
+          // ТОЧЕЧКА (Obsidian стиль), если есть данные
+          if (hasEntries) {
+            const dot = document.createElement("span");
+            // Если ячейка темная (выбранная), точку делаем белой, иначе серой/акцентной
+            dot.className = `w-1 h-1 rounded-full absolute bottom-1.5 transition-all ${dateKey === selectedDateKey ? "bg-white" : "bg-slate-400"}`;
+            dayCell.appendChild(dot);
+          }
+
+          // Событие клика на день
+          dayCell.onclick = () => {
+            selectedDateKey = dateKey;
+            renderCalendar(); // перерисовать сетку для обновления выделения
+            renderDayDetails(currentLoopDate);
+          };
+
+          grid.appendChild(dayCell);
+        }
+
+        // Автоматически обновляем детализацию при первой загрузке месяца
+        const parts = selectedDateKey.split("-");
+        renderDayDetails(
+          new Date(
+            parseInt(parts[0]),
+            parseInt(parts[1]) - 1,
+            parseInt(parts[2]),
+          ),
+        );
+      }
+
+      // Вывод подробной истории за выбранный кликом день
+      function renderDayDetails(dateObject) {
+        const container = document.getElementById("day-food-list");
+        const waterBlock = document.getElementById("day-water-block");
+        const waterText = document.getElementById("day-water-text");
+
+        // Форматируем красивую дату для подзаголовка
+        const options = { month: "long", day: "numeric", weekday: "short" };
+        document.getElementById("selected-day-title").innerText =
+          `История за: ${dateObject.toLocaleDateString("ru-RU", options)}`;
+
+        // 1. Проверяем воду
+        const waterCount = waterLogs[selectedDateKey] || 0;
+        if (waterCount > 0) {
+          waterBlock.classList.remove("hidden");
+          waterText.innerText = `В этот день вы выпили: ${waterCount} стак. воды`;
+        } else {
+          waterBlock.classList.add("hidden");
+        }
+
+        // 2. Ищем записи еды
+        const dayEntries = foodEntries.filter(
+          (e) => e.date === selectedDateKey,
+        );
+        container.innerHTML = "";
+
+        if (dayEntries.length === 0) {
+          container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400 text-xs flex flex-col items-center justify-center gap-1 bg-white rounded-2xl border border-dashed p-4">
+                        <i data-lucide="calendar-days" class="w-6 h-6 opacity-30"></i>
+                        <span>В этот день записей еды нет</span>
+                    </div>
+                `;
+          safeRenderIcons();
+          return;
+        }
+
+        // Сортировка по времени
+        dayEntries.sort((a, b) => a.time.localeCompare(b.time));
+
+        // Рендер карточек
+        dayEntries.forEach((entry) => {
+          const catConfig = categories[entry.category] || categories.snack;
+          const card = document.createElement("div");
+          card.className =
+            "bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center gap-3";
+
+          card.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <div class="w-9 h-9 rounded-full ${catConfig.color} flex items-center justify-center shrink-0">
+                            <i data-lucide="${catConfig.icon}" class="w-4 h-4"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-gray-800 text-sm break-words leading-tight">${entry.text}</h4>
+                            <p class="text-[11px] text-gray-400 mt-0.5">${catConfig.title} • ${entry.time}</p>
+                        </div>
+                    </div>
+                    ${
+                      entry.photo
+                        ? `
+                        <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-gray-100">
+                            <img src="${entry.photo}" class="w-full h-full object-cover">
+                        </div>
+                    `
+                        : ""
+                    }
+                `;
+          container.appendChild(card);
+        });
+
+        safeRenderIcons();
+      }
+
+      // Запуск при загрузке страницы
+      window.onload = function () {
+        renderCalendar();
+      };
+    </script>
+  </body>
+</html>
