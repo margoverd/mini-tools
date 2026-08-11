@@ -141,6 +141,20 @@ body {
   color: var(--text-muted);
 }
 
+.mood-banner-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.mood-banner-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px; 
+  object-fit: contain;
+}
+
 .form-group {
   margin-bottom: 18px;
 }
