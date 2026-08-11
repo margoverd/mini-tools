@@ -1,0 +1,271 @@
+/* Общие стили и переменные (светлая минималистичная тема) */
+:root {
+  --bg-color: #f8f9fa;
+  --panel-bg: #ffffff;
+  --text-color: #2d3748;
+  --text-muted: #718096;
+  --accent-color: #4f46e5;
+  --accent-hover: #4338ca;
+  --border-color: #e2e8f0;
+  --radius: 8px;
+  --error-color: #e53e3e;
+  --success-color: #38a169;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Шапка */
+.app-header {
+  background-color: var(--panel-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  letter-spacing: -0.5px;
+}
+
+/* Кнопка загрузки */
+.upload-btn {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.upload-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+.upload-btn input[type="file"] {
+  display: none;
+}
+
+/* Главный контейнер */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+/* Статус-бар */
+.status-message {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.status-message.error {
+  border-color: var(--error-color);
+  color: var(--error-color);
+  background-color: #fff5f5;
+}
+
+.status-message.success {
+  border-color: var(--success-color);
+  color: var(--success-color);
+  background-color: #f0fff4;
+}
+
+/* Панель управления */
+.controls-panel {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Кнопки управления */
+.btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.btn:hover:not(:disabled) {
+  background-color: var(--bg-color);
+  border-color: var(--text-muted);
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.btn:disabled,
+.select-input:disabled,
+input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Селектор дорожек */
+.select-input {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  outline: none;
+  font-size: 0.9rem;
+}
+
+/* Ползунок темпа */
+.tempo-group {
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent-color);
+  cursor: pointer;
+}
+
+#tempoValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: right;
+}
+
+/* Область отображения таб */
+.viewport-container {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#alphaTab {
+  position: relative;
+}
+
+/* =====================================
+  Songsterr style playback cursor
+===================================== */
+
+/* =====================================
+   alphaTab playback cursor
+===================================== */
+/* ==================================
+   Songsterr cursor
+================================== */
+
+.songsterr-cursor {
+  position: absolute;
+
+  width: 2px;
+
+  background: #4f46e5;
+
+  opacity: 0.9;
+
+  z-index: 99999;
+
+  pointer-events: none;
+
+  box-shadow: 0 0 5px rgba(79, 70, 229, 0.7);
+
+  transition:
+    left 0.05s linear,
+    top 0.05s linear;
+}
+
+/* текущая проигрываемая нота */
+
+.playing-note {
+  font-weight: 900 !important;
+
+  stroke-width: 2 !important;
+}
+
+.playing-note text,
+.playing-note tspan {
+  font-weight: 900 !important;
+}
+
+.fixed-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  border-radius: 0;
+  max-width: none;
+  background: white;
+}

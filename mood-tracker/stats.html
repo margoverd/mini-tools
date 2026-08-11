@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Аналитика и История</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
+      .summary-card {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 12px 8px;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      .summary-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+
+      .summary-label {
+        font-size: 0.68rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Календарная лента */
+      .calendar-strip {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 4px 2px 14px 2px;
+        margin-bottom: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .calendar-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      .day-card {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 14px;
+        min-width: 58px;
+        padding: 8px 6px;
+        text-align: center;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        user-select: none;
+        position: relative;
+      }
+
+      .day-card.active {
+        background: #ffffff;
+        color: var(--text-title);
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .day-card .day-name {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 2px;
+      }
+
+      .day-card.active .day-name {
+        opacity: 0.9;
+        color: var(--primary);
+      }
+
+      .day-card .day-num {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .day-dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        height: 14px;
+        margin-top: 2px;
+      }
+
+      /* Цифра без фона */
+      .count-num-plain {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: inherit;
+      }
+
+      .day-card:not(.active) .count-num-plain {
+        color: #38bdf8;
+      }
+
+      .day-card.active .count-num-plain {
+        color: var(--primary);
+      }
+
+      .dot-check {
+        color: #22c55e;
+        font-size: 0.75rem;
+      }
+
+      .dot-cross {
+        color: #ef4444;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .calendar-picker-btn {
+        background: rgba(255, 255, 255, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      /* Аккордеон записей */
+      .log-accordion {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        background: #ffffff;
+      }
+
+      .log-header-summary {
+        padding: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .log-header-summary:hover {
+        background: #f8fafc;
+      }
+
+      .log-main-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .log-title-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .log-time-badge {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-title);
+      }
+
+      .log-brief {
+        font-size: 0.85rem;
+        color: var(--text-body);
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        font-weight: 600;
+      }
+
+      .log-brief-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .toggle-icon {
+        color: var(--text-muted);
+        transition: transform 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .log-accordion.open .toggle-icon {
+        transform: rotate(180deg);
+      }
+
+      .log-details-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+        background: #f8fafc;
+        border-top: 1px solid #edf2f7;
+        padding: 0 14px;
+      }
+
+      .log-accordion.open .log-details-body {
+        max-height: 1000px;
+        transition: max-height 0.3s ease-in-out;
+        padding: 14px;
+      }
+
+      .detail-section {
+        margin-bottom: 12px;
+      }
+
+      .detail-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .detail-section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .emotions-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+
+      .emotion-chip {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .emotion-chip b {
+        color: var(--primary);
+      }
+
+      .symptoms-tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .symptom-tag {
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        font-weight: 500;
+      }
+
+      .med-item-tag {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: var(--text-body);
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .med-item-tag.prescription.taken {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #14532d;
+      }
+
+      .action-btns {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .action-btn {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .edit-btn {
+        background: #e0e7ff;
+        color: #3730a3;
+      }
+      .delete-btn {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .export-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        padding: 6px 12px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Выпадающие списки месяца и года */
+      .calendar-selectors {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .cal-select {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-title);
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      .cal-select:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+
+      .cal-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+      }
+
+      .cal-nav-btn {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: var(--text-title);
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      .cal-nav-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+
+      .calendar-nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .cal-head {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        padding: 6px 0;
+        text-transform: uppercase;
+      }
+
+      .cal-day {
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        position: relative;
+        color: var(--text-title);
+        transition: all 0.15s ease;
+      }
+
+      .cal-day:hover:not(.empty) {
+        background: #e2e8f0;
+      }
+
+      .cal-day.today {
+        border: 2px solid var(--primary);
+        font-weight: bold;
+      }
+
+      .cal-day.empty {
+        cursor: default;
+        opacity: 0.3;
+      }
+
+      .cal-day .cal-dots {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        position: absolute;
+        bottom: 2px;
+      }
+
+      .cal-day .cal-num-plain {
+        color: #3b82f6;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .cal-day .dot-green {
+        color: #16a34a;
+        font-size: 0.65rem;
+      }
+      .cal-day .dot-red {
+        color: #ef4444;
+        font-size: 0.65rem;
+        font-weight: bold;
+      }
+
+      .green-check-icon {
+        color: #16a34a;
+        font-size: 0.85rem;
+      }
+
+      .red-cross-icon {
+        color: #ef4444;
+        font-size: 0.85rem;
+      }
+
+      /* Блок для отсутствующей записи */
+      .empty-log-box {
+        text-align: center;
+        padding: 30px 15px;
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        margin-top: 10px;
+      }
+
+      .empty-log-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-body);
+        margin-bottom: 12px;
+      }
+
+      .add-log-btn {
+        background: var(--primary, #4f46e5);
+        color: #ffffff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s;
+        text-decoration: none;
+      }
+
+      .add-log-btn:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="app-header">
+        <div class="header-content">
+          <a href="index.html" class="stats-btn" title="Назад">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <h1>Аналитика</h1>
+          <button id="export-data" class="export-btn">
+            <i class="fa-solid fa-download"></i> Экспорт
+          </button>
+        </div>
+      </header>
+
+      <div class="stats-summary">
+        <div class="summary-card">
+          <div class="summary-label">Записей</div>
+          <div class="summary-value" id="stat-count">0</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Ср. Настроение</div>
+          <div class="summary-value" id="stat-avg-mood">-</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Ср. Сон</div>
+          <div class="summary-value" id="stat-avg-sleep">-</div>
+        </div>
+      </div>
+
+      <div class="calendar-strip" id="calendar-strip"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-mood">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="card-title-group">
+            <h2 id="history-title">История записей</h2>
+            <span class="card-subtitle" id="history-subtitle">Все дни</span>
+          </div>
+        </div>
+
+        <div id="history-container">
+          <p
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              padding: 20px 0;
+            "
+          >
+            Загрузка данных...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="calendar-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="calendar-nav-header">
+            <button
+              class="cal-nav-btn"
+              id="cal-prev-month"
+              title="Предыдущий месяц"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="calendar-selectors">
+              <select id="month-select" class="cal-select">
+                <option value="0">Январь</option>
+                <option value="1">Февраль</option>
+                <option value="2">Март</option>
+                <option value="3">Апрель</option>
+                <option value="4">Май</option>
+                <option value="5">Июнь</option>
+                <option value="6">Июль</option>
+                <option value="7">Август</option>
+                <option value="8">Сентябрь</option>
+                <option value="9">Октябрь</option>
+                <option value="10">Ноябрь</option>
+                <option value="11">Декабрь</option>
+              </select>
+              <select id="year-select" class="cal-select"></select>
+            </div>
+            <button
+              class="cal-nav-btn"
+              id="cal-next-month"
+              title="Следующий месяц"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <button class="modal-close-btn" id="close-modal-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="calendar-grid" id="full-calendar-grid"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const logs = JSON.parse(localStorage.getItem("health_logs") || "[]");
+        const historyContainer = document.getElementById("history-container");
+        const calendarStrip = document.getElementById("calendar-strip");
+        const modal = document.getElementById("calendar-modal");
+
+        let viewDate = new Date();
+
+        document.getElementById("stat-count").innerText = logs.length;
+
+        if (logs.length > 0) {
+          const moods = logs
+            .map((l) => Number(l.overallMood))
+            .filter((m) => m > 0);
+          const avgMood = moods.length
+            ? (moods.reduce((a, b) => a + b, 0) / moods.length).toFixed(1)
+            : "-";
+          document.getElementById("stat-avg-mood").innerText =
+            avgMood !== "-" ? `${avgMood}/10` : "-";
+
+          const sleeps = logs
+            .map((l) => Number(l.sleepHours))
+            .filter((s) => s > 0);
+          const avgSleep = sleeps.length
+            ? (sleeps.reduce((a, b) => a + b, 0) / sleeps.length).toFixed(1)
+            : "-";
+          document.getElementById("stat-avg-sleep").innerText =
+            avgSleep !== "-" ? `${avgSleep}ч` : "-";
+        }
+
+        // Статус обязательных и общая цифра всех принятых препаратов
+        function getPrescriptionsInfo(dayLog) {
+          if (!dayLog || !dayLog.meds || dayLog.meds.length === 0) {
+            return { status: "none", takenCount: 0 };
+          }
+
+          // Считаем ВСЕ принятые препараты (обязательные + необязательные)
+          const totalTaken = dayLog.meds.filter((m) => m.taken).length;
+
+          // Проверяем статус ТОЛЬКО по обязательным (назначенным) препаратам
+          const prescMeds = dayLog.meds.filter((m) => m.isPrescription);
+          let status = "none";
+
+          if (prescMeds.length > 0) {
+            const allPrescTaken = prescMeds.every((m) => m.taken);
+            status = allPrescTaken ? "all_taken" : "missed";
+          }
+
+          return {
+            status: status,
+            takenCount: totalTaken,
+          };
+        }
+
+        // Инициализация годов
+        const yearSelect = document.getElementById("year-select");
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear - 5; y <= currentYear + 5; y++) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          yearSelect.appendChild(opt);
+        }
+
+        // Экспорт JSON
+        document.getElementById("export-data").addEventListener("click", () => {
+          const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(logs, null, 2));
+          const downloadAnchor = document.createElement("a");
+          downloadAnchor.setAttribute("href", dataStr);
+          downloadAnchor.setAttribute(
+            "download",
+            `health_logs_${new Date().toISOString().slice(0, 10)}.json`,
+          );
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+        });
+
+        // Генерация ленты дней
+        function renderCalendarStrip() {
+          const days = [];
+          for (let i = 0; i < 14; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            days.push(d);
+          }
+
+          let html = `
+                    <div class="day-card calendar-picker-btn" id="open-calendar-btn" title="Открыть календарь">
+                        <i class="fa-regular fa-calendar-days"></i>
+                    </div>
+                    <div class="day-card active" data-date="all">
+                        <div class="day-name">Все</div>
+                        <div class="day-num"><i class="fa-solid fa-list-ul" style="font-size:0.85rem"></i></div>
+                        <div class="day-dots"></div>
+                    </div>
+                `;
+
+          days.forEach((d) => {
+            const dayName = d.toLocaleDateString("ru-RU", { weekday: "short" });
+            const dayNum = d.getDate();
+            const fullDateStr = d.toLocaleDateString("ru-RU");
+
+            const dayLog = logs.find((l) => l.date === fullDateStr);
+            const hasLog = !!dayLog;
+            const prescInfo = getPrescriptionsInfo(dayLog);
+
+            let statusIcon = "";
+            if (prescInfo.status === "all_taken") {
+              statusIcon =
+                '<i class="fa-solid fa-check dot-check" title="Все обязательные препараты приняты"></i>';
+            } else if (prescInfo.status === "missed") {
+              statusIcon =
+                '<i class="fa-solid fa-xmark dot-cross" title="Обязательные препараты пропущены"></i>';
+            }
+
+            html += `
+                        <div class="day-card" data-date="${fullDateStr}">
+                            <div class="day-name">${dayName}</div>
+                            <div class="day-num">${dayNum}</div>
+                            <div class="day-dots">
+                                ${hasLog ? `<span class="count-num-plain">${prescInfo.takenCount}</span>` : ""}
+                                ${statusIcon}
+                            </div>
+                        </div>
+                    `;
+          });
+
+          calendarStrip.innerHTML = html;
+
+          document
+            .getElementById("open-calendar-btn")
+            .addEventListener("click", () => {
+              viewDate = new Date();
+              renderFullCalendar();
+              modal.classList.add("active");
+            });
+
+          document.querySelectorAll(".day-card[data-date]").forEach((card) => {
+            card.addEventListener("click", () => {
+              document
+                .querySelectorAll(".day-card")
+                .forEach((c) => c.classList.remove("active"));
+              card.classList.add("active");
+
+              const selectedDate = card.getAttribute("data-date");
+              filterByDate(selectedDate);
+            });
+          });
+        }
+
+        function filterByDate(selectedDate) {
+          if (selectedDate === "all") {
+            document.getElementById("history-title").innerText =
+              "История записей";
+            document.getElementById("history-subtitle").innerText = "Все дни";
+            renderLogs(logs, "all");
+          } else {
+            document.getElementById("history-title").innerText =
+              `Записи за ${selectedDate}`;
+            document.getElementById("history-subtitle").innerText =
+              "Фильтр по дате";
+            const filtered = logs.filter((l) => l.date === selectedDate);
+            renderLogs(filtered, selectedDate);
+          }
+        }
+
+        // Отрисовка модального календаря
+        function renderFullCalendar() {
+          const year = viewDate.getFullYear();
+          const month = viewDate.getMonth();
+
+          document.getElementById("month-select").value = month;
+          document.getElementById("year-select").value = year;
+
+          const firstDay = new Date(year, month, 1);
+          const lastDay = new Date(year, month + 1, 0);
+
+          let startingDay = firstDay.getDay() - 1;
+          if (startingDay === -1) startingDay = 6;
+
+          const grid = document.getElementById("full-calendar-grid");
+          grid.innerHTML = `
+                    <div class="cal-head">Пн</div><div class="cal-head">Вт</div><div class="cal-head">Ср</div>
+                    <div class="cal-head">Чт</div><div class="cal-head">Пт</div><div class="cal-head">Сб</div><div class="cal-head">Вс</div>
+                `;
+
+          for (let i = 0; i < startingDay; i++) {
+            grid.innerHTML += `<div class="cal-day empty"></div>`;
+          }
+
+          const todayStr = new Date().toLocaleDateString("ru-RU");
+
+          for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dateObj = new Date(year, month, day);
+            const dateStr = dateObj.toLocaleDateString("ru-RU");
+
+            const dayLog = logs.find((l) => l.date === dateStr);
+            const hasLog = !!dayLog;
+            const prescInfo = getPrescriptionsInfo(dayLog);
+            const isToday = dateStr === todayStr;
+
+            let statusIcon = "";
+            if (prescInfo.status === "all_taken") {
+              statusIcon = '<i class="fa-solid fa-check dot-green"></i>';
+            } else if (prescInfo.status === "missed") {
+              statusIcon = '<i class="fa-solid fa-xmark dot-red"></i>';
+            }
+
+            grid.innerHTML += `
+                        <div class="cal-day ${isToday ? "today" : ""}" data-date="${dateStr}">
+                            <span>${day}</span>
+                            <div class="cal-dots">
+                                ${hasLog ? `<span class="cal-num-plain">${prescInfo.takenCount}</span>` : ""}
+                                ${statusIcon}
+                            </div>
+                        </div>
+                    `;
+          }
+
+          document.querySelectorAll(".cal-day[data-date]").forEach((el) => {
+            el.addEventListener("click", () => {
+              const selDate = el.getAttribute("data-date");
+              modal.classList.remove("active");
+              filterByDate(selDate);
+            });
+          });
+        }
+
+        // Переключение месяца и года
+        document
+          .getElementById("month-select")
+          .addEventListener("change", (e) => {
+            viewDate.setMonth(parseInt(e.target.value));
+            renderFullCalendar();
+          });
+
+        document
+          .getElementById("year-select")
+          .addEventListener("change", (e) => {
+            viewDate.setFullYear(parseInt(e.target.value));
+            renderFullCalendar();
+          });
+
+        document
+          .getElementById("cal-prev-month")
+          .addEventListener("click", () => {
+            viewDate.setMonth(viewDate.getMonth() - 1);
+            renderFullCalendar();
+          });
+
+        document
+          .getElementById("cal-next-month")
+          .addEventListener("click", () => {
+            viewDate.setMonth(viewDate.getMonth() + 1);
+            renderFullCalendar();
+          });
+
+        document
+          .getElementById("close-modal-btn")
+          .addEventListener("click", () => modal.classList.remove("active"));
+
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.classList.remove("active");
+          }
+        });
+
+        function renderLogs(logsToRender, selectedDate = "all") {
+          if (logsToRender.length === 0) {
+            if (selectedDate !== "all") {
+              historyContainer.innerHTML = `
+                            <div class="empty-log-box">
+                                <div class="empty-log-title">Запись за ${selectedDate} отсутствует</div>
+                                <a href="index.html?date=${encodeURIComponent(selectedDate)}" class="add-log-btn">
+                                    <i class="fa-solid fa-plus"></i> Добавить запись
+                                </a>
+                            </div>
+                        `;
+            } else {
+              historyContainer.innerHTML =
+                '<p style="text-align: center; color: var(--text-muted); padding: 20px 0;">Записей пока нет.</p>';
+            }
+            return;
+          }
+
+          const emotionNames = {
+            fear: "Страх",
+            anxiety: "Тревога",
+            shame: "Стыд",
+            guilt: "Вина",
+            sadness: "Грусть",
+            anger: "Раздражение",
+          };
+
+          historyContainer.innerHTML = logsToRender
+            .map((log, index) => {
+              let activeEmotions = [];
+              if (log.emotions) {
+                Object.keys(log.emotions).forEach((key) => {
+                  if (Number(log.emotions[key]) > 0) {
+                    activeEmotions.push({
+                      name: emotionNames[key] || key,
+                      val: log.emotions[key],
+                    });
+                  }
+                });
+              }
+
+              const prescInfo = getPrescriptionsInfo(log);
+
+              let statusBadge = "";
+              if (prescInfo.status === "all_taken") {
+                statusBadge =
+                  '<i class="fa-solid fa-check green-check-icon" title="Обязательные препараты приняты"></i>';
+              } else if (prescInfo.status === "missed") {
+                statusBadge =
+                  '<i class="fa-solid fa-xmark red-cross-icon" title="Обязательные препараты пропущены"></i>';
+              }
+
+              return `
+                        <div class="log-accordion" id="acc-${index}">
+                            <div class="log-header-summary" onclick="toggleAccordion('acc-${index}')">
+                                <div class="log-main-info">
+                                    <div class="log-title-row">
+                                        <span class="log-time-badge">${log.date}</span>
+                                        ${log.overallMood ? `<span class="log-badge badge-mood">Настроение: ${log.overallMood}/10</span>` : ""}
+                                    </div>
+                                    <div class="log-brief">
+                                        ${log.sleepHours ? `<span class="log-brief-item"><i class="fa-regular fa-moon"></i> ${log.sleepHours}ч</span>` : ""}
+                                        <span class="log-brief-item">
+                                            <i class="fa-solid fa-capsules"></i> ${prescInfo.takenCount} ${statusBadge}
+                                        </span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                            </div>
+
+                            <div class="log-details-body">
+                                ${
+                                  activeEmotions.length > 0
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Интенсивность эмоций</div>
+                                        <div class="emotions-grid">
+                                            ${activeEmotions
+                                              .map(
+                                                (e) => `
+                                                <div class="emotion-chip">
+                                                    <span>${e.name}:</span>
+                                                    <b>${e.val}/10</b>
+                                                </div>
+                                            `,
+                                              )
+                                              .join("")}
+                                        </div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                ${
+                                  log.sleepHours
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Сон</div>
+                                        <div class="log-details">Продолжительность: <b>${log.sleepHours} ч.</b> | Качество: <b>${log.sleepQuality}/10</b></div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                ${
+                                  log.meds && log.meds.length > 0
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Препараты</div>
+                                        <div>
+                                            ${log.meds
+                                              .map(
+                                                (m) => `
+                                                <div class="med-item-tag ${m.isPrescription ? "prescription" : ""} ${m.taken ? "taken" : ""}">
+                                                    <span>
+                                                        ${m.isPrescription ? '<i class="fa-solid fa-star" style="color:#eab308; font-size:0.75rem; margin-right:4px;" title="Назначено врачом (обязательный)"></i>' : ""}
+                                                        <b>${m.name}</b> ${m.dose ? `(${m.dose})` : ""}
+                                                    </span>
+                                                    <span>
+                                                        ${
+                                                          m.isPrescription
+                                                            ? m.taken
+                                                              ? '<i class="fa-solid fa-check" style="color:#16a34a;"></i> Принят '
+                                                              : '<i class="fa-solid fa-xmark" style="color:#ef4444;"></i> Не принят '
+                                                            : m.taken
+                                                              ? '<i class="fa-solid fa-check" style="color:#16a34a;"></i> Принят '
+                                                              : ""
+                                                        }
+                                                        ${m.time ? `(${m.time})` : ""}
+                                                    </span>
+                                                </div>
+                                            `,
+                                              )
+                                              .join("")}
+                                        </div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                ${
+                                  log.symptoms && log.symptoms.length > 0
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Симптомы</div>
+                                        <div class="symptoms-tags-list">
+                                            ${log.symptoms.map((s) => `<span class="symptom-tag">${s}</span>`).join("")}
+                                        </div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                ${
+                                  log.moodNotes
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Заметка к настроению</div>
+                                        <div class="log-details">${log.moodNotes}</div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                ${
+                                  log.generalNotes
+                                    ? `
+                                    <div class="detail-section">
+                                        <div class="detail-section-title">Заметка дня</div>
+                                        <div class="log-details">${log.generalNotes}</div>
+                                    </div>
+                                `
+                                    : ""
+                                }
+
+                                <div class="action-btns">
+                                    <button class="action-btn edit-btn" onclick="editLog('${log.date}')">
+                                        <i class="fa-solid fa-pen-to-square"></i> Редактировать
+                                    </button>
+                                    <button class="action-btn delete-btn" onclick="deleteLog('${log.date}')">
+                                        <i class="fa-solid fa-trash-can"></i> Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            })
+            .join("");
+        }
+
+        renderCalendarStrip();
+        renderLogs(logs);
+      });
+
+      function toggleAccordion(id) {
+        const item = document.getElementById(id);
+        if (item) item.classList.toggle("open");
+      }
+
+      function editLog(dateStr) {
+        window.location.href = `index.html?date=${encodeURIComponent(dateStr)}`;
+      }
+
+      function deleteLog(dateStr) {
+        if (confirm(`Удалить запись за ${dateStr}?`)) {
+          let logs = JSON.parse(localStorage.getItem("health_logs") || "[]");
+          logs = logs.filter((l) => l.date !== dateStr);
+          localStorage.setItem("health_logs", JSON.stringify(logs));
+          location.reload();
+        }
+      }
+    </script>
+  </body>
+</html>

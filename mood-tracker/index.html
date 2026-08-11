@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Дневник состояния</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="app-header">
+        <div class="header-content">
+          <div>
+            <span class="header-subtitle" id="record-status-label"
+              >Запись за день</span
+            >
+            <h1 id="current-date">-- ---</h1>
+          </div>
+          <div style="display: flex; gap: 8px">
+            <button
+              type="button"
+              class="stats-btn"
+              id="open-prescriptions-btn"
+              title="Назначенные препараты"
+            >
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+            </button>
+            <a href="stats.html" class="stats-btn" title="Статистика">
+              <i class="fa-solid fa-chart-simple"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <form id="tracker-form">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon icon-mood">
+              <i class="fa-regular fa-face-smile"></i>
+            </div>
+            <div class="card-title-group">
+              <h2>Настроение</h2>
+              <span class="card-subtitle">Общая оценка и базовые эмоции</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="group-label">Общее самочувствие</label>
+            <div class="number-selector" id="overall-mood-selector">
+              <button type="button" class="num-btn" data-value="1">1</button>
+              <button type="button" class="num-btn" data-value="2">2</button>
+              <button type="button" class="num-btn" data-value="3">3</button>
+              <button type="button" class="num-btn" data-value="4">4</button>
+              <button type="button" class="num-btn" data-value="5">5</button>
+              <button type="button" class="num-btn" data-value="6">6</button>
+              <button type="button" class="num-btn" data-value="7">7</button>
+              <button type="button" class="num-btn" data-value="8">8</button>
+              <button type="button" class="num-btn" data-value="9">9</button>
+              <button type="button" class="num-btn" data-value="10">10</button>
+            </div>
+            <input type="hidden" name="overallMood" id="overallMood" value="" />
+          </div>
+
+          <div class="form-group">
+            <label class="group-label">Интенсивность эмоций (0–10)</label>
+
+            <div class="slider-row">
+              <span class="slider-label">Страх</span>
+              <input
+                type="range"
+                id="input-fear"
+                name="fear"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-fear').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-fear">0</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Тревога</span>
+              <input
+                type="range"
+                id="input-anxiety"
+                name="anxiety"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-anxiety').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-anxiety">0</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Стыд</span>
+              <input
+                type="range"
+                id="input-shame"
+                name="shame"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-shame').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-shame">0</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Вина</span>
+              <input
+                type="range"
+                id="input-guilt"
+                name="guilt"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-guilt').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-guilt">0</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Грусть</span>
+              <input
+                type="range"
+                id="input-sadness"
+                name="sadness"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-sadness').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-sadness">0</span>
+            </div>
+
+            <div class="slider-row">
+              <span class="slider-label">Раздражение</span>
+              <input
+                type="range"
+                id="input-anger"
+                name="anger"
+                min="0"
+                max="10"
+                value="0"
+                oninput="
+                  document.getElementById('val-anger').innerText = this.value
+                "
+              />
+              <span class="slider-value" id="val-anger">0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <textarea
+              id="mood-notes"
+              name="moodNotes"
+              rows="2"
+              placeholder="Заметка к настроению..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon icon-sleep">
+              <i class="fa-regular fa-moon"></i>
+            </div>
+            <div class="card-title-group">
+              <h2>Сон</h2>
+              <span class="card-subtitle">Продолжительность и качество</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="group-label">Часов сна</label>
+              <input
+                type="number"
+                id="sleep-hours"
+                name="sleepHours"
+                step="0.5"
+                min="0"
+                max="24"
+                placeholder="7.5"
+              />
+            </div>
+            <div class="form-group">
+              <label class="group-label">Качество (1–10)</label>
+              <div class="slider-row">
+                <input
+                  type="range"
+                  id="input-sleepQuality"
+                  name="sleepQuality"
+                  min="1"
+                  max="10"
+                  value="5"
+                  oninput="
+                    document.getElementById('val-sleep').innerText = this.value
+                  "
+                />
+                <span class="slider-value" id="val-sleep">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon icon-meds">
+              <i class="fa-solid fa-capsules"></i>
+            </div>
+            <div class="card-title-group">
+              <h2>Препараты и симптомы</h2>
+              <span class="card-subtitle">Лекарства и побочные эффекты</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="group-label">Принятые препараты за день</label>
+            <div id="meds-list"></div>
+            <button type="button" id="add-med-btn" class="add-btn">
+              + Добавить разовый препарат
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="group-label">Симптомы за день</label>
+            <div class="chips-grid" id="symptoms-chips">
+              <button type="button" class="chip" data-symptom="Тошнота">
+                Тошнота
+              </button>
+              <button type="button" class="chip" data-symptom="Головная боль">
+                Головная боль
+              </button>
+              <button type="button" class="chip" data-symptom="Головокружение">
+                Головокружение
+              </button>
+              <button type="button" class="chip" data-symptom="Сонливость">
+                Сонливость
+              </button>
+              <button type="button" class="chip" data-symptom="Сухость во рту">
+                Сухость во рту
+              </button>
+              <button type="button" class="chip" data-symptom="Апатия">
+                Апатия
+              </button>
+              <button type="button" class="chip" data-symptom="Тремор">
+                Тремор
+              </button>
+              <button type="button" class="chip" data-symptom="Тахикардия">
+                Тахикардия
+              </button>
+              <button type="button" class="chip" data-symptom="Усталость">
+                Усталость
+              </button>
+              <button type="button" class="chip" data-symptom="Напряжение">
+                Напряжение
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <textarea
+              id="general-notes"
+              name="generalNotes"
+              rows="2"
+              placeholder="Общая заметка дня..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="bottom-bar">
+          <button type="submit" class="submit-btn" id="submit-btn">
+            Сохранить запись
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-overlay" id="prescriptions-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">Назначенные препараты</div>
+          <button class="modal-close-btn" id="close-prescriptions-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <p
+          style="
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+          "
+        >
+          Укажи обязательные лекарства. Они будут автоматически появляться в
+          каждом новом дне.
+        </p>
+        <div id="prescriptions-list"></div>
+        <button
+          type="button"
+          id="add-prescription-btn"
+          class="add-btn"
+          style="margin-top: 8px"
+        >
+          + Добавить назначение
+        </button>
+
+        <button
+          type="button"
+          id="save-prescriptions-btn"
+          class="submit-btn"
+          style="margin-top: 16px; padding: 10px"
+        >
+          Сохранить назначение
+        </button>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
