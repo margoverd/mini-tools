@@ -10,6 +10,44 @@
     />
     <link rel="stylesheet" href="css/style.css" />
     <style>
+      .meds-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 4px;
+      }
+
+      /* Все отлично */
+      .meds-badge.success {
+        background-color: #e6fffa;
+        color: #234e52;
+        border: 1px solid #b2f5ea;
+      }
+
+      /* Частично выполнено */
+      .meds-badge.warning {
+        background-color: #fffaf0;
+        color: #7b341e;
+        border: 1px solid #feebc8;
+      }
+
+      /* Ничего не принято */
+      .meds-badge.danger {
+        background-color: #fff5f5;
+        color: #742a2a;
+        border: 1px solid #fed7d7;
+      }
+
+      /* Только разовые */
+      .meds-badge.info {
+        background-color: #ebf8ff;
+        color: #2c5282;
+        border: 1px solid #bee3f8;
+      }
       .stats-summary {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -639,27 +677,51 @@
             avgSleep !== "-" ? `${avgSleep}ч` : "-";
         }
 
-        // Статус обязательных и общая цифра всех принятых препаратов
+        // Улучшенный статус препаратов по назначению врача
         function getPrescriptionsInfo(dayLog) {
           if (!dayLog || !dayLog.meds || dayLog.meds.length === 0) {
-            return { status: "none", takenCount: 0 };
+            return {
+              status: "none",
+              takenCount: 0,
+              textStatus: "Нет назначений",
+              badgeClass: "",
+            };
           }
 
-          // Считаем ВСЕ принятые препараты (обязательные + необязательные)
           const totalTaken = dayLog.meds.filter((m) => m.taken).length;
-
-          // Проверяем статус ТОЛЬКО по обязательным (назначенным) препаратам
           const prescMeds = dayLog.meds.filter((m) => m.isPrescription);
+
           let status = "none";
+          let textStatus = "";
+          let badgeClass = "";
 
           if (prescMeds.length > 0) {
-            const allPrescTaken = prescMeds.every((m) => m.taken);
-            status = allPrescTaken ? "all_taken" : "missed";
+            const prescTaken = prescMeds.filter((m) => m.taken).length;
+            const prescTotal = prescMeds.length;
+
+            if (prescTaken === prescTotal) {
+              status = "all_taken";
+              textStatus = `По назначению (${prescTaken}/${prescTotal})`;
+              badgeClass = "success";
+            } else if (prescTaken > 0) {
+              status = "partially_taken";
+              textStatus = `По назначению (${prescTaken}/${prescTotal})`;
+              badgeClass = "warning";
+            } else {
+              status = "missed";
+              textStatus = `По назначению (0/${prescTotal})`;
+              badgeClass = "danger";
+            }
+          } else {
+            textStatus = `Принято разовых: ${totalTaken}`;
+            badgeClass = "info";
           }
 
           return {
             status: status,
             takenCount: totalTaken,
+            textStatus: textStatus,
+            badgeClass: badgeClass,
           };
         }
 
@@ -699,15 +761,15 @@
           }
 
           let html = `
-                    <div class="day-card calendar-picker-btn" id="open-calendar-btn" title="Открыть календарь">
-                        <i class="fa-regular fa-calendar-days"></i>
-                    </div>
-                    <div class="day-card active" data-date="all">
-                        <div class="day-name">Все</div>
-                        <div class="day-num"><i class="fa-solid fa-list-ul" style="font-size:0.85rem"></i></div>
-                        <div class="day-dots"></div>
-                    </div>
-                `;
+        <div class="day-card calendar-picker-btn" id="open-calendar-btn" title="Открыть календарь">
+            <i class="fa-regular fa-calendar-days"></i>
+        </div>
+        <div class="day-card active" data-date="all">
+            <div class="day-name">Все</div>
+            <div class="day-num"><i class="fa-solid fa-list-ul" style="font-size:0.85rem"></i></div>
+            <div class="day-dots"></div>
+        </div>
+      `;
 
           days.forEach((d) => {
             const dayName = d.toLocaleDateString("ru-RU", { weekday: "short" });
@@ -721,22 +783,25 @@
             let statusIcon = "";
             if (prescInfo.status === "all_taken") {
               statusIcon =
-                '<i class="fa-solid fa-check dot-check" title="Все обязательные препараты приняты"></i>';
+                '<i class="fa-solid fa-check dot-check" title="Все по назначению приняты"></i>';
+            } else if (prescInfo.status === "partially_taken") {
+              statusIcon =
+                '<i class="fa-solid fa-minus dot-warning" title="Принята часть препаратов по назначению" style="color:#f59e0b;"></i>';
             } else if (prescInfo.status === "missed") {
               statusIcon =
-                '<i class="fa-solid fa-xmark dot-cross" title="Обязательные препараты пропущены"></i>';
+                '<i class="fa-solid fa-xmark dot-cross" title="Препараты по назначению пропущены"></i>';
             }
 
             html += `
-                        <div class="day-card" data-date="${fullDateStr}">
-                            <div class="day-name">${dayName}</div>
-                            <div class="day-num">${dayNum}</div>
-                            <div class="day-dots">
-                                ${hasLog ? `<span class="count-num-plain">${prescInfo.takenCount}</span>` : ""}
-                                ${statusIcon}
-                            </div>
-                        </div>
-                    `;
+          <div class="day-card" data-date="${fullDateStr}">
+              <div class="day-name">${dayName}</div>
+              <div class="day-num">${dayNum}</div>
+              <div class="day-dots">
+                  ${hasLog ? `<span class="count-num-plain">${prescInfo.takenCount}</span>` : ""}
+                  ${statusIcon}
+              </div>
+          </div>
+        `;
           });
 
           calendarStrip.innerHTML = html;
@@ -794,9 +859,9 @@
 
           const grid = document.getElementById("full-calendar-grid");
           grid.innerHTML = `
-                    <div class="cal-head">Пн</div><div class="cal-head">Вт</div><div class="cal-head">Ср</div>
-                    <div class="cal-head">Чт</div><div class="cal-head">Пт</div><div class="cal-head">Сб</div><div class="cal-head">Вс</div>
-                `;
+        <div class="cal-head">Пн</div><div class="cal-head">Вт</div><div class="cal-head">Ср</div>
+        <div class="cal-head">Чт</div><div class="cal-head">Пт</div><div class="cal-head">Сб</div><div class="cal-head">Вс</div>
+      `;
 
           for (let i = 0; i < startingDay; i++) {
             grid.innerHTML += `<div class="cal-day empty"></div>`;
@@ -816,19 +881,22 @@
             let statusIcon = "";
             if (prescInfo.status === "all_taken") {
               statusIcon = '<i class="fa-solid fa-check dot-green"></i>';
+            } else if (prescInfo.status === "partially_taken") {
+              statusIcon =
+                '<i class="fa-solid fa-minus dot-warning" style="color:#f59e0b;"></i>';
             } else if (prescInfo.status === "missed") {
               statusIcon = '<i class="fa-solid fa-xmark dot-red"></i>';
             }
 
             grid.innerHTML += `
-                        <div class="cal-day ${isToday ? "today" : ""}" data-date="${dateStr}">
-                            <span>${day}</span>
-                            <div class="cal-dots">
-                                ${hasLog ? `<span class="cal-num-plain">${prescInfo.takenCount}</span>` : ""}
-                                ${statusIcon}
-                            </div>
-                        </div>
-                    `;
+          <div class="cal-day ${isToday ? "today" : ""}" data-date="${dateStr}">
+              <span>${day}</span>
+              <div class="cal-dots">
+                  ${hasLog ? `<span class="cal-num-plain">${prescInfo.takenCount}</span>` : ""}
+                  ${statusIcon}
+              </div>
+          </div>
+        `;
           }
 
           document.querySelectorAll(".cal-day[data-date]").forEach((el) => {
@@ -883,13 +951,13 @@
           if (logsToRender.length === 0) {
             if (selectedDate !== "all") {
               historyContainer.innerHTML = `
-                            <div class="empty-log-box">
-                                <div class="empty-log-title">Запись за ${selectedDate} отсутствует</div>
-                                <a href="index.html?date=${encodeURIComponent(selectedDate)}" class="add-log-btn">
-                                    <i class="fa-solid fa-plus"></i> Добавить запись
-                                </a>
-                            </div>
-                        `;
+            <div class="empty-log-box">
+                <div class="empty-log-title">Запись за ${selectedDate} отсутствует</div>
+                <a href="index.html?date=${encodeURIComponent(selectedDate)}" class="add-log-btn">
+                    <i class="fa-solid fa-plus"></i> Добавить запись
+                </a>
+            </div>
+          `;
             } else {
               historyContainer.innerHTML =
                 '<p style="text-align: center; color: var(--text-muted); padding: 20px 0;">Записей пока нет.</p>';
@@ -922,149 +990,142 @@
 
               const prescInfo = getPrescriptionsInfo(log);
 
-              let statusBadge = "";
-              if (prescInfo.status === "all_taken") {
-                statusBadge =
-                  '<i class="fa-solid fa-check green-check-icon" title="Обязательные препараты приняты"></i>';
-              } else if (prescInfo.status === "missed") {
-                statusBadge =
-                  '<i class="fa-solid fa-xmark red-cross-icon" title="Обязательные препараты пропущены"></i>';
-              }
-
               return `
-                        <div class="log-accordion" id="acc-${index}">
-                            <div class="log-header-summary" onclick="toggleAccordion('acc-${index}')">
-                                <div class="log-main-info">
-                                    <div class="log-title-row">
-                                        <span class="log-time-badge">${log.date}</span>
-                                        ${log.overallMood ? `<span class="log-badge badge-mood">Настроение: ${log.overallMood}/10</span>` : ""}
-                                    </div>
-                                    <div class="log-brief">
-                                        ${log.sleepHours ? `<span class="log-brief-item"><i class="fa-regular fa-moon"></i> ${log.sleepHours}ч</span>` : ""}
-                                        <span class="log-brief-item">
-                                            <i class="fa-solid fa-capsules"></i> ${prescInfo.takenCount} ${statusBadge}
-                                        </span>
-                                    </div>
-                                </div>
-                                <i class="fa-solid fa-chevron-down toggle-icon"></i>
-                            </div>
+            <div class="log-accordion" id="acc-${index}">
+                <div class="log-header-summary" onclick="toggleAccordion('acc-${index}')">
+                    <div class="log-main-info">
+                        <div class="log-title-row">
+                            <span class="log-time-badge">${log.date}</span>
+                            ${log.overallMood ? `<span class="log-badge badge-mood">Настроение: ${log.overallMood}/10</span>` : ""}
+                        </div>
+                        <div class="log-brief">
+                            ${log.sleepHours ? `<span class="log-brief-item"><i class="fa-regular fa-moon"></i> ${log.sleepHours}ч</span>` : ""}
+                            ${
+                              prescInfo.textStatus
+                                ? `
+                              <span class="meds-badge ${prescInfo.badgeClass}">
+                                <i class="fa-solid fa-capsules"></i> ${prescInfo.textStatus}
+                              </span>
+                            `
+                                : ""
+                            }
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                </div>
 
-                            <div class="log-details-body">
-                                ${
-                                  activeEmotions.length > 0
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Интенсивность эмоций</div>
-                                        <div class="emotions-grid">
-                                            ${activeEmotions
-                                              .map(
-                                                (e) => `
-                                                <div class="emotion-chip">
-                                                    <span>${e.name}:</span>
-                                                    <b>${e.val}/10</b>
-                                                </div>
-                                            `,
-                                              )
-                                              .join("")}
-                                        </div>
+                <div class="log-details-body">
+                    ${
+                      activeEmotions.length > 0
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Интенсивность эмоций</div>
+                            <div class="emotions-grid">
+                                ${activeEmotions
+                                  .map(
+                                    (e) => `
+                                    <div class="emotion-chip">
+                                        <span>${e.name}:</span>
+                                        <b>${e.val}/10</b>
                                     </div>
-                                `
-                                    : ""
-                                }
-
-                                ${
-                                  log.sleepHours
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Сон</div>
-                                        <div class="log-details">Продолжительность: <b>${log.sleepHours} ч.</b> | Качество: <b>${log.sleepQuality}/10</b></div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-
-                                ${
-                                  log.meds && log.meds.length > 0
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Препараты</div>
-                                        <div>
-                                            ${log.meds
-                                              .map(
-                                                (m) => `
-                                                <div class="med-item-tag ${m.isPrescription ? "prescription" : ""} ${m.taken ? "taken" : ""}">
-                                                    <span>
-                                                        ${m.isPrescription ? '<i class="fa-solid fa-star" style="color:#eab308; font-size:0.75rem; margin-right:4px;" title="Назначено врачом (обязательный)"></i>' : ""}
-                                                        <b>${m.name}</b> ${m.dose ? `(${m.dose})` : ""}
-                                                    </span>
-                                                    <span>
-                                                        ${
-                                                          m.isPrescription
-                                                            ? m.taken
-                                                              ? '<i class="fa-solid fa-check" style="color:#16a34a;"></i> Принят '
-                                                              : '<i class="fa-solid fa-xmark" style="color:#ef4444;"></i> Не принят '
-                                                            : m.taken
-                                                              ? '<i class="fa-solid fa-check" style="color:#16a34a;"></i> Принят '
-                                                              : ""
-                                                        }
-                                                        ${m.time ? `(${m.time})` : ""}
-                                                    </span>
-                                                </div>
-                                            `,
-                                              )
-                                              .join("")}
-                                        </div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-
-                                ${
-                                  log.symptoms && log.symptoms.length > 0
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Симптомы</div>
-                                        <div class="symptoms-tags-list">
-                                            ${log.symptoms.map((s) => `<span class="symptom-tag">${s}</span>`).join("")}
-                                        </div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-
-                                ${
-                                  log.moodNotes
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Заметка к настроению</div>
-                                        <div class="log-details">${log.moodNotes}</div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-
-                                ${
-                                  log.generalNotes
-                                    ? `
-                                    <div class="detail-section">
-                                        <div class="detail-section-title">Заметка дня</div>
-                                        <div class="log-details">${log.generalNotes}</div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-
-                                <div class="action-btns">
-                                    <button class="action-btn edit-btn" onclick="editLog('${log.date}')">
-                                        <i class="fa-solid fa-pen-to-square"></i> Редактировать
-                                    </button>
-                                    <button class="action-btn delete-btn" onclick="deleteLog('${log.date}')">
-                                        <i class="fa-solid fa-trash-can"></i> Удалить
-                                    </button>
-                                </div>
+                                `,
+                                  )
+                                  .join("")}
                             </div>
                         </div>
-                    `;
+                    `
+                        : ""
+                    }
+
+                    ${
+                      log.sleepHours
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Сон</div>
+                            <div class="log-details">Продолжительность: <b>${log.sleepHours} ч.</b> | Качество: <b>${log.sleepQuality}/10</b></div>
+                        </div>
+                    `
+                        : ""
+                    }
+
+                    ${
+                      log.meds && log.meds.length > 0
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Препараты</div>
+                            <div>
+                                ${log.meds
+                                  .map(
+                                    (m) => `
+                                    <div class="med-item-tag ${m.isPrescription ? "prescription" : ""} ${m.taken ? "taken" : ""}">
+                                        <span>
+                                            ${m.isPrescription ? '<i class="fa-solid fa-user-doctor" style="color:#2563eb; font-size:0.8rem; margin-right:4px;" title="Назначено врачом"></i>' : ""}
+                                            <b>${m.name}</b> ${m.dose ? `(${m.dose})` : ""}
+                                        </span>
+                                        <span>
+                                            ${
+                                              m.taken
+                                                ? '<i class="fa-solid fa-check" style="color:#16a34a;"></i> Принят '
+                                                : '<i class="fa-solid fa-xmark" style="color:#ef4444;"></i> Не принят '
+                                            }
+                                            ${m.time ? `(${m.time})` : ""}
+                                        </span>
+                                    </div>
+                                `,
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+
+                    ${
+                      log.symptoms && log.symptoms.length > 0
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Симптомы</div>
+                            <div class="symptoms-tags-list">
+                                ${log.symptoms.map((s) => `<span class="symptom-tag">${s}</span>`).join("")}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+
+                    ${
+                      log.moodNotes
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Заметка к настроению</div>
+                            <div class="log-details">${log.moodNotes}</div>
+                        </div>
+                    `
+                        : ""
+                    }
+
+                    ${
+                      log.generalNotes
+                        ? `
+                        <div class="detail-section">
+                            <div class="detail-section-title">Заметка дня</div>
+                            <div class="log-details">${log.generalNotes}</div>
+                        </div>
+                    `
+                        : ""
+                    }
+
+                    <div class="action-btns">
+                        <button class="action-btn edit-btn" onclick="editLog('${log.date}')">
+                            <i class="fa-solid fa-pen-to-square"></i> Редактировать
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteLog('${log.date}')">
+                            <i class="fa-solid fa-trash-can"></i> Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+          `;
             })
             .join("");
         }
