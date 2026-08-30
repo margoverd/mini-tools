@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Калистеника & Питание</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --primary: #6366f1;
+        --primary-light: #e0e7ff;
+        --primary-dark: #4f46e5;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --accent-green: #22c55e;
+        --border-radius: 20px;
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        padding-bottom: 90px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      header {
+        padding: 24px 20px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .user-level-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        margin: 0 20px 20px;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+      }
+
+      .level-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .xp-bar-bg {
+        background: rgba(255, 255, 255, 0.2);
+        height: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .xp-bar-fill {
+        background: #fff;
+        height: 100%;
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+
+      .nav-tabs {
+        display: flex;
+        justify-content: space-around;
+        background: var(--card-bg);
+        padding: 10px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        max-width: 600px;
+        border-top: 1px solid #e2e8f0;
+        z-index: 100;
+      }
+
+      .tab-btn {
+        border: none;
+        background: none;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+        gap: 4px;
+        cursor: pointer;
+        width: 20%;
+      }
+
+      .tab-btn.active {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .tab-content {
+        display: none;
+        padding: 0 20px 20px;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 16px 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Calendar & Habit Grid */
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        background: var(--card-bg);
+        padding: 16px;
+        border-radius: var(--border-radius);
+        text-align: center;
+      }
+
+      .day-head {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .day-cell {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .day-cell.completed {
+        background: var(--accent-green);
+        color: white;
+      }
+
+      .day-cell.today {
+        border: 2px solid var(--primary);
+      }
+
+      /* Exercise Card */
+      .exercise-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+
+      .exercise-anim {
+        width: 65px;
+        height: 65px;
+        background: var(--primary-light);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        flex-shrink: 0;
+      }
+
+      .exercise-info {
+        flex-grow: 1;
+      }
+
+      .exercise-info h4 {
+        font-size: 15px;
+        margin-bottom: 4px;
+      }
+
+      .exercise-info p {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .yt-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #ef4444;
+        text-decoration: none;
+        font-size: 12px;
+        margin-top: 6px;
+        font-weight: 600;
+      }
+
+      .action-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px;
+        width: 100%;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: var(--transition);
+      }
+
+      .action-btn:active {
+        transform: scale(0.98);
+      }
+
+      .action-btn.done {
+        background: var(--accent-green);
+      }
+
+      /* Schedule Timeline */
+      .schedule-day {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .rest-day {
+        opacity: 0.6;
+        background: #f1f5f9;
+      }
+
+      /* Nutrition Tab Styles */
+      .calc-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+      }
+
+      .input-group {
+        margin-bottom: 12px;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
+        outline: none;
+        background: #f8fafc;
+      }
+
+      .result-box {
+        background: var(--primary-light);
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+        margin-top: 12px;
+      }
+
+      .result-box h3 {
+        color: var(--primary-dark);
+        font-size: 22px;
+      }
+
+      .protein-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        font-size: 13px;
+      }
+
+      .protein-table th,
+      .protein-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .protein-table th {
+        background: #f1f5f9;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--primary-light);
+        color: var(--primary-dark);
+      }
+
+      .video-banner {
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        border-radius: 16px;
+        padding: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .video-banner a {
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 style="font-size: 20px; font-weight: 800">Калистеника</h1>
+        <p style="font-size: 12px; color: var(--text-muted)">
+          Месяц 1: Full Body Workout
+        </p>
+      </div>
+      <i data-lucide="zap" style="color: var(--primary)"></i>
+    </header>
+
+    <!-- Level Progress Card -->
+    <div class="user-level-card">
+      <div class="level-header">
+        <div>
+          <span style="font-size: 12px; opacity: 0.9">Твой уровень</span>
+          <h2 id="level-display" style="font-size: 24px">Уровень 1</h2>
+        </div>
+        <i data-lucide="trophy" style="width: 32px; height: 32px"></i>
+      </div>
+      <div class="xp-bar-bg">
+        <div class="xp-bar-fill" id="xp-fill"></div>
+      </div>
+      <p
+        style="font-size: 11px; margin-top: 6px; text-align: right"
+        id="xp-text"
+      >
+        0 / 100 XP
+      </p>
+    </div>
+
+    <!-- MAIN TABS -->
+
+    <!-- TAB 1: TODAY'S WORKOUT -->
+    <div id="tab-today" class="tab-content active">
+      <div class="video-banner">
+        <div>
+          <div style="font-size: 11px; color: #991b1b; font-weight: 600">
+            ГЛАВНОЕ ВИДЕО 1-ГО МЕСЯЦА
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #7f1d1d">
+            20 Min Full Body Workout
+          </div>
+        </div>
+        <a href="https://www.youtube.com/watch?v=kuUZYUBHryw" target="_blank">
+          <i data-lucide="youtube" style="width: 18px; height: 18px"></i>
+          Открыть
+        </a>
+      </div>
+
+      <h3 class="section-title">
+        <i data-lucide="dumbbell"></i> Тренировка на сегодня
+      </h3>
+      <div id="today-workout-container"></div>
+      <button class="action-btn" id="finish-btn" onclick="completeWorkout()">
+        Отметить тренировку выполненной (+50 XP)
+      </button>
+    </div>
+
+    <!-- TAB 2: SCHEDULE -->
+    <div id="tab-schedule" class="tab-content">
+      <h3 class="section-title">
+        <i data-lucide="calendar"></i> Расписание на 1-й месяц
+      </h3>
+      <div id="schedule-list"></div>
+    </div>
+
+    <!-- TAB 3: NUTRITION & PROTEIN CALC -->
+    <div id="tab-nutrition" class="tab-content">
+      <h3 class="section-title">
+        <i data-lucide="calculator"></i> Калькулятор белка
+      </h3>
+      <div class="calc-card">
+        <div class="input-group">
+          <label>Ваш вес (кг):</label>
+          <input
+            type="number"
+            id="user-weight"
+            value="53"
+            oninput="calculateProtein()"
+          />
+        </div>
+        <div class="input-group">
+          <label>Цель / Уровень активности:</label>
+          <select id="activity-level" onchange="calculateProtein()">
+            <option value="1.2">Поддержание тонуса / Новичок (1.2 г/кг)</option>
+            <option value="1.4" selected>
+              Рельеф + Калистеника (1.4 г/кг)
+            </option>
+            <option value="1.6">Интенсивные тренировки (1.6 г/кг)</option>
+          </select>
+        </div>
+        <div class="result-box">
+          <span style="font-size: 12px; color: var(--text-muted)"
+            >Рекомендуемая суточная норма:</span
+          >
+          <h3 id="protein-result">74 г белка/день</h3>
+        </div>
+      </div>
+
+      <h3 class="section-title">
+        <i data-lucide="leaf"></i> Вегетарианские источники белка
+      </h3>
+      <table class="protein-table">
+        <thead>
+          <tr>
+            <th>Продукт</th>
+            <th>Порция</th>
+            <th>Белок</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Творог 5% / Мягкий</td>
+            <td>150 г</td>
+            <td><span class="badge">~24 г</span></td>
+          </tr>
+          <tr>
+            <td>Греческий йогурт</td>
+            <td>170 г</td>
+            <td><span class="badge">~16 г</span></td>
+          </tr>
+          <tr>
+            <td>Яйца куриные</td>
+            <td>2 шт</td>
+            <td><span class="badge">~13 г</span></td>
+          </tr>
+          <tr>
+            <td>Тофу (твердый)</td>
+            <td>100 г</td>
+            <td><span class="badge">~14 г</span></td>
+          </tr>
+          <tr>
+            <td>Чечевица / Нут (вареные)</td>
+            <td>150 г</td>
+            <td><span class="badge">~13 г</span></td>
+          </tr>
+          <tr>
+            <td>Эдамаме (соевые бобы)</td>
+            <td>100 г</td>
+            <td><span class="badge">~11 г</span></td>
+          </tr>
+          <tr>
+            <td>Твердый сыр (Пармезан/Легкий)</td>
+            <td>30 г</td>
+            <td><span class="badge">~9 г</span></td>
+          </tr>
+          <tr>
+            <td>Арахисовая паста</td>
+            <td>2 ст. л.</td>
+            <td><span class="badge">~8 г</span></td>
+          </tr>
+          <tr>
+            <td>Тыквенные семечки / Орехи</td>
+            <td>30 г</td>
+            <td><span class="badge">~7 г</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 4: HABIT & TRACKER -->
+    <div id="tab-tracker" class="tab-content">
+      <h3 class="section-title">
+        <i data-lucide="check-circle-2"></i> Трекер привычки
+      </h3>
+      <div class="calendar-grid" id="calendar-grid">
+        <div class="day-head">Пн</div>
+        <div class="day-head">Вт</div>
+        <div class="day-head">Ср</div>
+        <div class="day-head">Чт</div>
+        <div class="day-head">Пт</div>
+        <div class="day-head">Сб</div>
+        <div class="day-head">Вс</div>
+      </div>
+      <div
+        style="
+          margin-top: 15px;
+          background: var(--card-bg);
+          padding: 15px;
+          border-radius: var(--border-radius);
+        "
+      >
+        <p style="font-size: 13px; color: var(--text-muted)">
+          Всего выполнено тренировок:
+          <b id="total-count" style="color: var(--text-main)">0</b>
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 5: EXERCISES LIBRARY -->
+    <div id="tab-exercises" class="tab-content">
+      <h3 class="section-title">
+        <i data-lucide="book-open"></i> База упражнений (Full Body)
+      </h3>
+      <div id="exercise-library"></div>
+    </div>
+
+    <!-- NAV BAR -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('today', this)">
+        <i data-lucide="play-circle"></i>Сегодня
+      </button>
+      <button class="tab-btn" onclick="switchTab('schedule', this)">
+        <i data-lucide="calendar-days"></i>План
+      </button>
+      <button class="tab-btn" onclick="switchTab('nutrition', this)">
+        <i data-lucide="utensils"></i>Питание
+      </button>
+      <button class="tab-btn" onclick="switchTab('tracker', this)">
+        <i data-lucide="award"></i>Трекер
+      </button>
+      <button class="tab-btn" onclick="switchTab('exercises', this)">
+        <i data-lucide="list"></i>База
+      </button>
+    </nav>
+
+    <script>
+      const exercises = [
+        {
+          id: "narrow-split-squats",
+          name: "Узкие выпады (Narrow Split Squats)",
+          reps: "3 круга × 40 сек (по 20 сек на ногу)",
+          desc: "Развивает одноногую силу и мобильность голеностопа под пистолетик.",
+          icon: "arrow-down-to-line",
+          link: "https://www.youtube.com/watch?v=kuUZYUBHryw",
+        },
+        {
+          id: "negative-pushups",
+          name: "Негативные отжимания (Negative Push-Ups)",
+          reps: "3 круга × 40 сек",
+          desc: "Медленный опуск (3-4 сек) от пола, подъём обратно — с колен.",
+          icon: "trending-up",
+          link: "https://www.youtube.com/watch?v=kuUZYUBHryw",
+        },
+        {
+          id: "leg-compressions",
+          name: "Подъемы ног сидя (Seated Leg Compression)",
+          reps: "3 круга × 40 сек",
+          desc: "Укрепляет квадрицепсы и глубокий кор без изгиба спины.",
+          icon: "align-center",
+          link: "https://www.youtube.com/watch?v=kuUZYUBHryw",
+        },
+        {
+          id: "cossack-lunges",
+          name: "Казачьи приседания (Cossack Lunges)",
+          reps: "3 круга × 40 сек",
+          desc: "Боковые выпады для мобильности бёдер и силы ног.",
+          icon: "move-right",
+          link: "https://www.youtube.com/watch?v=kuUZYUBHryw",
+        },
+        {
+          id: "half-hollow-hold",
+          name: "Удержание Half Hollow Hold",
+          reps: "3 круга × 40 сек",
+          desc: "Фиксация корпуса на спине, поясница строго прижата к полу.",
+          icon: "shield",
+          link: "https://www.youtube.com/watch?v=kuUZYUBHryw",
+        },
+      ];
+
+      const schedule = [
+        {
+          day: "Понедельник",
+          type: "Full Body (20 минут)",
+          ex: [
+            "narrow-split-squats",
+            "negative-pushups",
+            "leg-compressions",
+            "cossack-lunges",
+            "half-hollow-hold",
+          ],
+        },
+        { day: "Вторник", type: "Отдых и лёгкая прогулка", ex: [] },
+        {
+          day: "Среда",
+          type: "Full Body (20 минут)",
+          ex: [
+            "narrow-split-squats",
+            "negative-pushups",
+            "leg-compressions",
+            "cossack-lunges",
+            "half-hollow-hold",
+          ],
+        },
+        { day: "Четверг", type: "Отдых", ex: [] },
+        {
+          day: "Пятница",
+          type: "Full Body (20 минут)",
+          ex: [
+            "narrow-split-squats",
+            "negative-pushups",
+            "leg-compressions",
+            "cossack-lunges",
+            "half-hollow-hold",
+          ],
+        },
+        { day: "Суббота", type: "Отдых / Растяжка", ex: [] },
+        { day: "Воскресенье", type: "Отдых", ex: [] },
+      ];
+
+      let state = JSON.parse(localStorage.getItem("cali_state")) || {
+        xp: 0,
+        level: 1,
+        completedDays: [],
+        userWeight: 53,
+      };
+
+      function saveState() {
+        localStorage.setItem("cali_state", JSON.stringify(state));
+        updateUI();
+      }
+
+      function calculateProtein() {
+        const weightInput = document.getElementById("user-weight");
+        const weight = parseFloat(weightInput.value) || 0;
+        const factor = parseFloat(
+          document.getElementById("activity-level").value,
+        );
+
+        state.userWeight = weight;
+        localStorage.setItem("cali_state", JSON.stringify(state));
+
+        const totalProtein = Math.round(weight * factor);
+        document.getElementById("protein-result").innerText =
+          `${totalProtein} г белка/день`;
+      }
+
+      function updateUI() {
+        state.level = Math.floor(state.xp / 100) + 1;
+        const currentXP = state.xp % 100;
+
+        document.getElementById("level-display").innerText =
+          `Уровень ${state.level}`;
+        document.getElementById("xp-fill").style.width = `${currentXP}%`;
+        document.getElementById("xp-text").innerText = `${currentXP} / 100 XP`;
+        document.getElementById("total-count").innerText =
+          state.completedDays.length;
+
+        const todayStr = getTodayStr();
+        const finishBtn = document.getElementById("finish-btn");
+        if (state.completedDays.includes(todayStr)) {
+          finishBtn.classList.add("done");
+          finishBtn.innerText = "Тренировка на сегодня выполнена! ✓";
+        } else {
+          finishBtn.classList.remove("done");
+          finishBtn.innerText = "Отметить тренировку выполненной (+50 XP)";
+        }
+        renderCalendar();
+      }
+
+      function switchTab(tabId, el) {
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById(`tab-${tabId}`).classList.add("active");
+        el.classList.add("active");
+      }
+
+      function getTodayStr() {
+        return new Date().toISOString().split("T")[0];
+      }
+
+      function completeWorkout() {
+        const todayStr = getTodayStr();
+        if (!state.completedDays.includes(todayStr)) {
+          state.completedDays.push(todayStr);
+          state.xp += 50;
+          saveState();
+        }
+      }
+
+      function renderToday() {
+        const dayIdx = (new Date().getDay() + 6) % 7;
+        const todayPlan = schedule[dayIdx];
+        const container = document.getElementById("today-workout-container");
+
+        if (todayPlan.ex.length === 0) {
+          container.innerHTML = `<div class="schedule-day rest-day"><b>Сегодня день отдыха!</b><br>Восстановление — ключевая часть прогресса. Сделайте легкую прогулку или растяжку.</div>`;
+          return;
+        }
+
+        container.innerHTML = `<p style="font-size:14px; margin-bottom: 10px; color: var(--text-muted);">Формат: <b>3 круга (40 сек работа / 20 сек отдых)</b></p>`;
+        todayPlan.ex.forEach((id) => {
+          const item = exercises.find((e) => e.id === id);
+          container.innerHTML += createExerciseCardHTML(item);
+        });
+      }
+
+      function renderSchedule() {
+        const container = document.getElementById("schedule-list");
+        container.innerHTML = "";
+        schedule.forEach((s) => {
+          const isRest = s.ex.length === 0;
+          container.innerHTML += `
+                    <div class="schedule-day ${isRest ? "rest-day" : ""}">
+                        <div class="schedule-header">
+                            <span>${s.day}</span>
+                            <span style="color: var(--primary); font-size:13px;">${s.type}</span>
+                        </div>
+                        ${
+                          isRest
+                            ? '<p style="font-size:12px; color: var(--text-muted);">Восстановление</p>'
+                            : `<p style="font-size:12px; color: var(--text-muted);">${s.ex.map((id) => exercises.find((e) => e.id === id).name).join(" • ")}</p>`
+                        }
+                    </div>
+                `;
+        });
+      }
+
+      function renderLibrary() {
+        const container = document.getElementById("exercise-library");
+        container.innerHTML = "";
+        exercises.forEach((item) => {
+          container.innerHTML += createExerciseCardHTML(item);
+        });
+      }
+
+      function createExerciseCardHTML(item) {
+        return `
+                <div class="exercise-card">
+                    <div class="exercise-anim">
+                        <i data-lucide="${item.icon}"></i>
+                    </div>
+                    <div class="exercise-info">
+                        <h4>${item.name}</h4>
+                        <p>${item.reps}</p>
+                        <p style="margin-top:2px;">${item.desc}</p>
+                        <a href="${item.link}" target="_blank" class="yt-btn">
+                            <i data-lucide="youtube" style="width:14px;"></i> Разбор в YouTube
+                        </a>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderCalendar() {
+        const grid = document.getElementById("calendar-grid");
+        while (grid.children.length > 7) {
+          grid.removeChild(grid.lastChild);
+        }
+
+        const today = new Date();
+        for (let i = 13; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const dStr = d.toISOString().split("T")[0];
+
+          const cell = document.createElement("div");
+          cell.className = "day-cell";
+          if (state.completedDays.includes(dStr))
+            cell.classList.add("completed");
+          if (i === 0) cell.classList.add("today");
+          cell.innerText = d.getDate();
+          grid.appendChild(cell);
+        }
+      }
+
+      window.onload = () => {
+        if (state.userWeight) {
+          document.getElementById("user-weight").value = state.userWeight;
+        }
+        renderToday();
+        renderSchedule();
+        renderLibrary();
+        calculateProtein();
+        updateUI();
+        lucide.createIcons();
+      };
+    </script>
+  </body>
+</html>
