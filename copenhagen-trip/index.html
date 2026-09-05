@@ -1,0 +1,2290 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <title>Copenhagen Trip</title>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      :root {
+        --bg: #f4f5f6;
+        --card: #ffffff;
+        --text: #17212b;
+        --muted: #7b858e;
+        --accent: #e34b55;
+        --accent-soft: #fff0f1;
+        --blue: #3b82f6;
+        --blue-soft: #edf4ff;
+        --green: #159b7c;
+        --green-soft: #eaf8f4;
+        --orange: #e98b2c;
+        --border: #e7eaed;
+        --shadow: 0 12px 40px rgba(20, 30, 40, 0.08);
+        --bottom-space: 120px;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+
+        background: var(--bg);
+        color: var(--text);
+
+        /* Исправляет перекрытие контента нижним баром */
+        padding-bottom: calc(var(--bottom-space) + env(safe-area-inset-bottom));
+      }
+
+      button,
+      a {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      i {
+        width: 19px;
+        height: 19px;
+        stroke-width: 2;
+      }
+
+      /* =========================
+           HERO
+        ========================== */
+
+      .hero {
+        min-height: 290px;
+        padding: 30px 24px;
+
+        position: relative;
+        overflow: hidden;
+
+        color: white;
+
+        background:
+          linear-gradient(
+            135deg,
+            rgba(15, 30, 40, 0.25),
+            rgba(15, 35, 48, 0.78)
+          ),
+          url("https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?auto=format&fit=crop&w=1600&q=85")
+            center/cover;
+      }
+
+      .hero::before {
+        content: "";
+
+        position: absolute;
+
+        width: 300px;
+        height: 300px;
+
+        right: -110px;
+        top: -130px;
+
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+
+        max-width: 1150px;
+        margin: auto;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 9px 14px;
+
+        border-radius: 100px;
+
+        background: rgba(255, 255, 255, 0.15);
+
+        border: 1px solid rgba(255, 255, 255, 0.22);
+
+        backdrop-filter: blur(12px);
+
+        font-size: 13px;
+      }
+
+      .badge i {
+        width: 16px;
+        height: 16px;
+      }
+
+      h1 {
+        margin: 30px 0 10px;
+
+        font-size: clamp(42px, 7vw, 72px);
+
+        line-height: 0.95;
+
+        letter-spacing: -3px;
+      }
+
+      .hero p {
+        margin: 0;
+
+        font-size: 17px;
+
+        opacity: 0.88;
+      }
+
+      /* =========================
+           CONTAINER
+        ========================== */
+
+      .container {
+        width: min(1100px, calc(100% - 32px));
+
+        margin: -45px auto 0;
+
+        position: relative;
+        z-index: 5;
+      }
+
+      /* =========================
+           QUICK INFO
+        ========================== */
+
+      .quick-grid {
+        display: grid;
+
+        grid-template-columns: repeat(4, 1fr);
+
+        gap: 12px;
+
+        margin-bottom: 28px;
+      }
+
+      .quick-card {
+        background: rgba(255, 255, 255, 0.94);
+
+        backdrop-filter: blur(15px);
+
+        border-radius: 20px;
+
+        padding: 18px;
+
+        box-shadow: var(--shadow);
+      }
+
+      .quick-card i {
+        width: 23px;
+        height: 23px;
+
+        margin-bottom: 10px;
+
+        color: var(--blue);
+      }
+
+      .quick-card strong {
+        display: block;
+
+        font-size: 18px;
+      }
+
+      .quick-card span {
+        display: block;
+
+        margin-top: 4px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+      }
+
+      /* =========================
+           LIVE MODE
+        ========================== */
+
+      .live-mode {
+        background: linear-gradient(135deg, #17212b, #2c4558);
+
+        color: white;
+
+        border-radius: 26px;
+
+        padding: 24px;
+
+        margin-bottom: 28px;
+
+        box-shadow: var(--shadow);
+      }
+
+      .live-header {
+        display: flex;
+
+        align-items: flex-start;
+        justify-content: space-between;
+
+        gap: 20px;
+      }
+
+      .live-title {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+      }
+
+      .live-title i {
+        color: #8cd8ff;
+      }
+
+      .live-title h2 {
+        margin: 0;
+
+        font-size: 21px;
+      }
+
+      .live-status {
+        margin-top: 8px;
+
+        color: rgba(255, 255, 255, 0.62);
+
+        font-size: 14px;
+      }
+
+      .live-day {
+        display: inline-flex;
+
+        align-items: center;
+
+        padding: 7px 11px;
+
+        border-radius: 100px;
+
+        background: rgba(255, 255, 255, 0.1);
+
+        font-size: 12px;
+
+        white-space: nowrap;
+      }
+
+      .current-event {
+        margin-top: 25px;
+
+        padding: 20px;
+
+        border-radius: 20px;
+
+        background: rgba(255, 255, 255, 0.08);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .current-event small {
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .current-event h3 {
+        margin: 7px 0 8px;
+
+        font-size: 23px;
+      }
+
+      .current-event p {
+        margin: 0;
+
+        color: rgba(255, 255, 255, 0.68);
+
+        line-height: 1.5;
+      }
+
+      .live-buttons {
+        display: flex;
+
+        gap: 10px;
+
+        margin-top: 20px;
+      }
+
+      .live-btn {
+        border: none;
+
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 8px;
+
+        padding: 13px 16px;
+
+        border-radius: 14px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        transition: 0.2s;
+      }
+
+      .live-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .live-btn.primary {
+        background: white;
+
+        color: var(--text);
+      }
+
+      .live-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+
+        color: white;
+      }
+
+      .live-progress {
+        margin-top: 22px;
+      }
+
+      .progress-info {
+        display: flex;
+
+        justify-content: space-between;
+
+        margin-bottom: 8px;
+
+        color: rgba(255, 255, 255, 0.6);
+
+        font-size: 12px;
+      }
+
+      .progress-bar {
+        height: 7px;
+
+        background: rgba(255, 255, 255, 0.12);
+
+        border-radius: 20px;
+
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+
+        width: 0%;
+
+        background: linear-gradient(90deg, #79c7ff, #8de5c8);
+
+        border-radius: inherit;
+
+        transition: width 0.4s ease;
+      }
+
+      /* =========================
+           DAY TABS
+        ========================== */
+
+      .day-tabs {
+        display: flex;
+
+        gap: 10px;
+
+        overflow-x: auto;
+
+        padding-bottom: 8px;
+
+        scrollbar-width: none;
+
+        margin-bottom: 26px;
+      }
+
+      .day-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .day-tab {
+        border: 1px solid var(--border);
+
+        background: white;
+
+        color: var(--muted);
+
+        padding: 13px 18px;
+
+        border-radius: 15px;
+
+        white-space: nowrap;
+
+        transition: 0.25s;
+      }
+
+      .day-tab.active {
+        background: var(--text);
+
+        color: white;
+
+        border-color: var(--text);
+      }
+
+      .day-content {
+        display: none;
+      }
+
+      .day-content.active {
+        display: block;
+
+        animation: fade 0.35s ease;
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+
+          transform: translateY(8px);
+        }
+
+        to {
+          opacity: 1;
+
+          transform: translateY(0);
+        }
+      }
+
+      /* =========================
+           SECTIONS
+        ========================== */
+
+      .section {
+        margin: 36px 0;
+      }
+
+      .section-title {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 17px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+
+        font-size: 25px;
+
+        letter-spacing: -0.8px;
+      }
+
+      .section-title span {
+        color: var(--muted);
+
+        font-size: 13px;
+      }
+
+      /* =========================
+           TIMELINE
+        ========================== */
+
+      .timeline {
+        position: relative;
+      }
+
+      .timeline::before {
+        content: "";
+
+        position: absolute;
+
+        left: 21px;
+
+        top: 20px;
+        bottom: 20px;
+
+        width: 2px;
+
+        background: var(--border);
+      }
+
+      .timeline-item {
+        position: relative;
+
+        padding-left: 60px;
+
+        margin-bottom: 17px;
+      }
+
+      .time {
+        position: absolute;
+
+        left: 0;
+        top: 18px;
+
+        width: 43px;
+        height: 43px;
+
+        border-radius: 14px;
+
+        background: var(--text);
+
+        color: white;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+
+        font-size: 10px;
+
+        font-weight: 700;
+
+        z-index: 2;
+      }
+
+      .timeline-card {
+        background: var(--card);
+
+        border: 1px solid var(--border);
+
+        border-radius: 22px;
+
+        padding: 20px;
+
+        transition: 0.25s;
+      }
+
+      .timeline-item.current .timeline-card {
+        border-color: var(--blue);
+
+        box-shadow: 0 0 0 4px var(--blue-soft);
+      }
+
+      .timeline-item.completed .timeline-card {
+        opacity: 0.65;
+      }
+
+      .timeline-card h3 {
+        margin: 0 0 9px;
+
+        font-size: 18px;
+      }
+
+      .timeline-card p {
+        margin: 0 0 15px;
+
+        color: var(--muted);
+
+        line-height: 1.55;
+
+        font-size: 14px;
+      }
+
+      /* =========================
+           BUTTONS
+        ========================== */
+
+      .buttons {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 9px;
+      }
+
+      .btn {
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 7px;
+
+        border-radius: 12px;
+
+        padding: 11px 14px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        transition: 0.2s;
+      }
+
+      .btn i {
+        width: 16px;
+        height: 16px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn.primary {
+        background: var(--text);
+
+        color: white;
+      }
+
+      .btn.secondary {
+        background: var(--blue-soft);
+
+        color: var(--blue);
+      }
+
+      /* =========================
+           PRICE
+        ========================== */
+
+      .price {
+        display: inline-block;
+
+        padding: 8px 11px;
+
+        border-radius: 10px;
+
+        background: var(--accent-soft);
+
+        color: var(--accent);
+
+        font-size: 13px;
+
+        font-weight: 700;
+      }
+
+      /* =========================
+           FOOD
+        ========================== */
+
+      .food-grid {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 15px;
+      }
+
+      .food-card {
+        background: white;
+
+        border-radius: 22px;
+
+        overflow: hidden;
+
+        border: 1px solid var(--border);
+      }
+
+      .food-image {
+        width: 100%;
+
+        height: 190px;
+
+        object-fit: cover;
+      }
+
+      .food-content {
+        padding: 17px;
+      }
+
+      .food-content h3 {
+        margin: 0 0 7px;
+
+        font-size: 17px;
+      }
+
+      .food-content p {
+        margin: 0;
+
+        color: var(--muted);
+
+        font-size: 13px;
+
+        line-height: 1.5;
+      }
+
+      /* =========================
+           INFO BOX
+        ========================== */
+
+      .info-box {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 12px;
+
+        padding: 18px;
+
+        background: var(--blue-soft);
+
+        color: #315d9c;
+
+        border-radius: 20px;
+
+        font-size: 14px;
+
+        line-height: 1.55;
+      }
+
+      .info-box i {
+        min-width: 20px;
+
+        color: var(--blue);
+      }
+
+      /* =========================
+           EXPENSES
+        ========================== */
+
+      .expense-grid {
+        display: grid;
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 18px;
+      }
+
+      .expense-card {
+        background: white;
+
+        border: 1px solid var(--border);
+
+        border-radius: 24px;
+
+        padding: 22px;
+      }
+
+      .person {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        margin-bottom: 18px;
+      }
+
+      .avatar {
+        width: 43px;
+        height: 43px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 14px;
+
+        background: var(--blue-soft);
+
+        color: var(--blue);
+      }
+
+      .person h3 {
+        margin: 0;
+      }
+
+      .person span {
+        display: block;
+
+        margin-top: 3px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+      }
+
+      .expense-row {
+        display: flex;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        padding: 10px 0;
+
+        border-bottom: 1px solid var(--border);
+
+        font-size: 13px;
+      }
+
+      .expense-row span {
+        color: var(--muted);
+      }
+
+      .total {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-top: 18px;
+
+        padding: 16px;
+
+        border-radius: 16px;
+
+        background: var(--text);
+
+        color: white;
+      }
+
+      .total small {
+        display: block;
+
+        margin-top: 4px;
+
+        opacity: 0.65;
+      }
+
+      /* =========================
+           BUDGET
+        ========================== */
+
+      .budget-card {
+        padding: 30px;
+
+        border-radius: 28px;
+
+        color: white;
+
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(255, 255, 255, 0.16),
+            transparent 32%
+          ),
+          linear-gradient(135deg, #17212b, #2d4659);
+      }
+
+      .budget-card h2 {
+        margin: 0;
+      }
+
+      .budget-big {
+        margin: 18px 0 5px;
+
+        font-size: clamp(43px, 8vw, 70px);
+
+        font-weight: 800;
+
+        letter-spacing: -3px;
+      }
+
+      .budget-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .budget-people {
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+        gap: 12px;
+
+        margin-top: 27px;
+      }
+
+      .budget-person {
+        padding: 17px;
+
+        border-radius: 18px;
+
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .budget-person span {
+        display: block;
+
+        color: rgba(255, 255, 255, 0.6);
+
+        font-size: 13px;
+      }
+
+      .budget-person strong {
+        display: block;
+
+        margin: 7px 0;
+
+        font-size: 21px;
+      }
+
+      /* =========================
+           CHECKLIST
+        ========================== */
+
+      .checklist {
+        display: grid;
+
+        gap: 10px;
+      }
+
+      .check-item {
+        display: flex;
+
+        align-items: center;
+
+        gap: 13px;
+
+        padding: 16px;
+
+        background: white;
+
+        border-radius: 17px;
+
+        border: 1px solid var(--border);
+
+        cursor: pointer;
+      }
+
+      .check-item input {
+        width: 21px;
+        height: 21px;
+
+        accent-color: var(--green);
+      }
+
+      .check-item.checked span {
+        text-decoration: line-through;
+
+        color: var(--muted);
+      }
+
+      /* =========================
+           BOTTOM NAVIGATION
+        ========================== */
+
+      .bottom-nav {
+        position: fixed;
+
+        left: 50%;
+        transform: translateX(-50%);
+
+        bottom: calc(14px + env(safe-area-inset-bottom));
+
+        width: min(620px, calc(100% - 24px));
+
+        display: flex;
+
+        justify-content: space-around;
+
+        padding: 9px;
+
+        border-radius: 22px;
+
+        background: rgba(255, 255, 255, 0.94);
+
+        backdrop-filter: blur(20px);
+
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.13);
+
+        z-index: 1000;
+      }
+
+      .nav-btn {
+        border: none;
+
+        background: transparent;
+
+        color: var(--muted);
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding: 9px 18px;
+
+        border-radius: 14px;
+
+        font-size: 11px;
+      }
+
+      .nav-btn i {
+        width: 19px;
+        height: 19px;
+      }
+
+      .nav-btn.active {
+        background: var(--text);
+
+        color: white;
+      }
+
+      /* =========================
+           MOBILE
+        ========================== */
+
+      @media (max-width: 700px) {
+        :root {
+          --bottom-space: 110px;
+        }
+
+        .hero {
+          min-height: 255px;
+
+          padding: 24px 18px;
+        }
+
+        .container {
+          width: calc(100% - 24px);
+
+          margin-top: -30px;
+        }
+
+        .quick-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .quick-card {
+          padding: 15px;
+        }
+
+        .quick-card strong {
+          font-size: 16px;
+        }
+
+        .quick-card span {
+          font-size: 11px;
+        }
+
+        .live-mode {
+          padding: 20px;
+        }
+
+        .live-header {
+          flex-direction: column;
+        }
+
+        .live-buttons {
+          flex-direction: column;
+        }
+
+        .live-btn {
+          width: 100%;
+        }
+
+        .food-grid,
+        .expense-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .food-image {
+          height: 220px;
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .budget-card {
+          padding: 24px;
+        }
+
+        .timeline-card {
+          padding: 17px;
+        }
+
+        .nav-btn {
+          padding: 9px 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="hero" id="home">
+      <div class="hero-content">
+        <div class="badge">
+          <i data-lucide="calendar-days"></i>
+          11–13 сентября • Копенгаген
+        </div>
+
+        <h1>Copenhagen Trip</h1>
+
+        <p>Ваш личный путеводитель по путешествию</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- QUICK INFO -->
+
+      <div class="quick-grid">
+        <div class="quick-card">
+          <i data-lucide="calendar-days"></i>
+
+          <strong>3 дня</strong>
+
+          <span>11–13 сентября</span>
+        </div>
+
+        <div class="quick-card">
+          <i data-lucide="users"></i>
+
+          <strong>2 человека</strong>
+
+          <span>Маргарита + Стас</span>
+        </div>
+
+        <div class="quick-card">
+          <i data-lucide="wallet"></i>
+
+          <strong>328 €</strong>
+
+          <span>примерный бюджет</span>
+        </div>
+
+        <div class="quick-card">
+          <i data-lucide="map-pin"></i>
+
+          <strong>10+</strong>
+
+          <span>мест посетим</span>
+        </div>
+      </div>
+
+      <!-- LIVE MODE -->
+
+      <section class="live-mode">
+        <div class="live-header">
+          <div>
+            <div class="live-title">
+              <i data-lucide="navigation"></i>
+
+              <h2>Сейчас в путешествии</h2>
+            </div>
+
+            <div class="live-status">
+              Отмечайте завершённые пункты и приложение будет вести вас дальше.
+            </div>
+          </div>
+
+          <div class="live-day" id="liveDay">Маршрут</div>
+        </div>
+
+        <div class="current-event">
+          <small> ТЕКУЩИЙ ЭТАП </small>
+
+          <h3 id="currentTitle">Путешествие ещё не началось</h3>
+
+          <p id="currentDescription">
+            Выберите день и начните путешествие, когда будете готовы.
+          </p>
+        </div>
+
+        <div class="live-buttons">
+          <button class="live-btn primary" id="nextEventBtn">
+            <i data-lucide="check"></i>
+
+            Завершить и продолжить
+          </button>
+
+          <button class="live-btn secondary" id="showCurrentBtn">
+            <i data-lucide="locate-fixed"></i>
+
+            Показать текущий пункт
+          </button>
+        </div>
+
+        <div class="live-progress">
+          <div class="progress-info">
+            <span> Прогресс путешествия </span>
+
+            <span id="progressText"> 0 / 16 </span>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DAY TABS -->
+
+      <div class="day-tabs">
+        <button class="day-tab active" data-day="day1">Пт • 11 сентября</button>
+
+        <button class="day-tab" data-day="day2">Сб • 12 сентября</button>
+
+        <button class="day-tab" data-day="day3">Вс • 13 сентября</button>
+
+        <button class="day-tab" data-day="budget">Бюджет</button>
+      </div>
+
+      <!-- =========================
+         DAY 1
+    ========================== -->
+
+      <section id="day1" class="day-content active">
+        <div class="section-title">
+          <h2>Прилет и вечер на воде</h2>
+
+          <span>Пятница</span>
+        </div>
+
+        <div class="info-box">
+          <i data-lucide="plane"></i>
+
+          <div>
+            В аэропорт Риги нужно приехать примерно за
+            <strong>2 часа до вылета</strong>.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="timeline">
+            <div class="timeline-item" data-event="0">
+              <div class="time">16:55</div>
+
+              <div class="timeline-card">
+                <h3>Прилет в Копенгаген</h3>
+
+                <p>
+                  После прилёта покупаем City Pass Small на 24 часа и едем в
+                  центр города.
+                </p>
+
+                <div class="price">100 DKK • 13,38 €</div>
+
+                <div class="buttons" style="margin-top: 15px">
+                  <a
+                    class="btn secondary"
+                    target="_blank"
+                    href="https://maps.app.goo.gl/CTzYZLGwBKvGTb3k6"
+                  >
+                    <i data-lucide="map"></i>
+
+                    Открыть маршрут
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="1">
+              <div class="time">18:00</div>
+
+              <div class="timeline-card">
+                <h3>Экскурсия на лодке</h3>
+
+                <p>Часовая прогулка по каналам Копенгагена от Ved Stranden.</p>
+
+                <div class="price">199 DKK • 26,62 €</div>
+
+                <div class="buttons" style="margin-top: 15px">
+                  <a
+                    class="btn primary"
+                    target="_blank"
+                    href="https://www.stromma.com/en-dk/copenhagen/sightseeing/sightseeing-by-boat/grand-tour/"
+                  >
+                    <i data-lucide="ticket"></i>
+
+                    Купить билет
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="2">
+              <div class="time">19:00</div>
+
+              <div class="timeline-card">
+                <h3>Ужин в Smagsløget</h3>
+
+                <p>После экскурсии идём за датскими сэндвичами.</p>
+
+                <div class="buttons">
+                  <a
+                    class="btn secondary"
+                    target="_blank"
+                    href="https://maps.app.goo.gl/npxazdBBmWcnHsEd6"
+                  >
+                    <i data-lucide="navigation"></i>
+
+                    Пеший маршрут
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="3">
+              <div class="time">20:30</div>
+
+              <div class="timeline-card">
+                <h3>Заселение в Sleep in Heaven</h3>
+
+                <p>Отдыхаем после первого насыщенного вечера в Копенгагене.</p>
+
+                <div class="buttons">
+                  <a
+                    class="btn secondary"
+                    target="_blank"
+                    href="https://maps.app.goo.gl/Ydw6mjj7B1M8Rhgp6"
+                  >
+                    <i data-lucide="map-pin"></i>
+
+                    Маршрут
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOD -->
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Что покупаем на ужин</h2>
+          </div>
+
+          <div class="food-grid">
+            <div class="food-card">
+              <img
+                class="food-image"
+                src="Flaskestegssandwich.png"
+                alt="Сэндвич"
+              />
+
+              <div class="food-content">
+                <h3>Flæskestegssandwich</h3>
+
+                <p>Мясной датский сэндвич для Стаса.</p>
+
+                <div class="price">115 DKK • 15,38 €</div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <img
+                class="food-image"
+                src="Smagslogets-Vegetar.png"
+                alt="Вегетарианский сэндвич"
+              />
+
+              <div class="food-content">
+                <h3>Smagsløgets Vegetar</h3>
+
+                <p>Вегетарианский сэндвич для Маргариты.</p>
+
+                <div class="price">109 DKK • 14,58 €</div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <img
+                class="food-image"
+                src="Faxe-Kondi.png"
+                alt="Faxe Kondi"
+              />
+
+              <div class="food-content">
+                <h3>Faxe Kondi</h3>
+
+                <p>Датский лимонад для вас обоих.</p>
+
+                <div class="price">20 DKK • 2,68 €</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPENSES DAY 1 -->
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Расходы за день</h2>
+          </div>
+
+          <div class="expense-grid">
+            <div class="expense-card">
+              <div class="person">
+                <div class="avatar">
+                  <i data-lucide="user"></i>
+                </div>
+
+                <div>
+                  <h3>Стас</h3>
+
+                  <span>Пятница</span>
+                </div>
+              </div>
+
+              <div class="expense-row">
+                <span>Проезд</span>
+                <strong>100 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Экскурсия</span>
+                <strong>199 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Сэндвич</span>
+                <strong>115 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Faxe Kondi</span>
+                <strong>20 DKK</strong>
+              </div>
+
+              <div class="total">
+                <div>
+                  Итого
+
+                  <small> ≈ 58,06 € </small>
+                </div>
+
+                <strong> 434 DKK </strong>
+              </div>
+            </div>
+
+            <div class="expense-card">
+              <div class="person">
+                <div class="avatar">
+                  <i data-lucide="user"></i>
+                </div>
+
+                <div>
+                  <h3>Маргарита</h3>
+
+                  <span>Пятница</span>
+                </div>
+              </div>
+
+              <div class="expense-row">
+                <span>Проезд</span>
+                <strong>100 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Экскурсия</span>
+                <strong>199 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Сэндвич</span>
+                <strong>109 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Faxe Kondi</span>
+                <strong>20 DKK</strong>
+              </div>
+
+              <div class="total">
+                <div>
+                  Итого
+
+                  <small> ≈ 57,26 € </small>
+                </div>
+
+                <strong> 428 DKK </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================
+         DAY 2
+    ========================== -->
+
+      <section id="day2" class="day-content">
+        <div class="section-title">
+          <h2>Подземелье, океан и Тиволи</h2>
+
+          <span>Суббота</span>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item" data-event="4">
+            <div class="time">10:30</div>
+
+            <div class="timeline-card">
+              <h3>Cisternerne</h3>
+
+              <p>Подземные арт-цистерны в парке Søndermarken.</p>
+
+              <div class="price">90 DKK • 12,04 €</div>
+
+              <div class="buttons" style="margin-top: 15px">
+                <a
+                  class="btn secondary"
+                  target="_blank"
+                  href="https://maps.app.goo.gl/o5CYhmycuycGe5o27"
+                >
+                  <i data-lucide="bus"></i>
+
+                  Маршрут
+                </a>
+
+                <a
+                  class="btn primary"
+                  target="_blank"
+                  href="https://shop.frederiksbergmuseerne.dk/en/tickets/cisternerne/"
+                >
+                  <i data-lucide="ticket"></i>
+
+                  Билеты
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" data-event="5">
+            <div class="time">12:30</div>
+
+            <div class="timeline-card">
+              <h3>Den Blå Planet</h3>
+
+              <p>
+                Национальный океанариум Дании. Планируем провести здесь три
+                часа.
+              </p>
+
+              <div class="price">219 DKK • 29,29 €</div>
+
+              <div class="buttons" style="margin-top: 15px">
+                <a
+                  class="btn secondary"
+                  target="_blank"
+                  href="https://maps.app.goo.gl/quzUW13gU4NuHPqc6"
+                >
+                  <i data-lucide="map"></i>
+
+                  Маршрут
+                </a>
+
+                <a
+                  class="btn primary"
+                  target="_blank"
+                  href="https://denblaaplanet.dk/en/visit-us/prices-and-opening-hours/"
+                >
+                  <i data-lucide="ticket"></i>
+
+                  Билеты
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" data-event="6">
+            <div class="time">15:30</div>
+
+            <div class="timeline-card">
+              <h3>Обед и отдых</h3>
+
+              <p>
+                Burger King и примерно 40 минут отдыха. Не забыть проверить City
+                Pass.
+              </p>
+
+              <div class="price">≈ 93 DKK на человека</div>
+            </div>
+          </div>
+
+          <div class="timeline-item" data-event="7">
+            <div class="time">17:00</div>
+
+            <div class="timeline-card">
+              <h3>Tivoli Gardens</h3>
+
+              <p>Вечер в легендарном парке развлечений.</p>
+
+              <div class="price">180 DKK • 24,07 €</div>
+
+              <div class="buttons" style="margin-top: 15px">
+                <a
+                  class="btn secondary"
+                  target="_blank"
+                  href="https://maps.app.goo.gl/cmnnB97yhHWtW3XL8"
+                >
+                  <i data-lucide="navigation"></i>
+
+                  Маршрут
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="expense-grid">
+            <div class="expense-card">
+              <div class="person">
+                <div class="avatar">
+                  <i data-lucide="user"></i>
+                </div>
+
+                <div>
+                  <h3>Стас</h3>
+
+                  <span>Суббота</span>
+                </div>
+              </div>
+
+              <div class="expense-row">
+                <span>Cisternerne</span>
+                <strong>90 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Океанариум</span>
+                <strong>219 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Burger King</span>
+                <strong>93 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Tivoli</span>
+                <strong>180 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Метро</span>
+                <strong>24 DKK</strong>
+              </div>
+
+              <div class="total">
+                <div>
+                  Итого
+
+                  <small> ≈ 81,10 € </small>
+                </div>
+
+                <strong> 606 DKK </strong>
+              </div>
+            </div>
+
+            <div class="expense-card">
+              <div class="person">
+                <div class="avatar">
+                  <i data-lucide="user"></i>
+                </div>
+
+                <div>
+                  <h3>Маргарита</h3>
+
+                  <span>Суббота</span>
+                </div>
+              </div>
+
+              <div class="expense-row">
+                <span>Cisternerne</span>
+                <strong>90 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Океанариум</span>
+                <strong>219 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Burger King</span>
+                <strong>93 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Tivoli</span>
+                <strong>180 DKK</strong>
+              </div>
+
+              <div class="expense-row">
+                <span>Метро</span>
+                <strong>24 DKK</strong>
+              </div>
+
+              <div class="total">
+                <div>
+                  Итого
+
+                  <small> ≈ 81,10 € </small>
+                </div>
+
+                <strong> 606 DKK </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================
+         DAY 3
+    ========================== -->
+
+      <section id="day3" class="day-content">
+        <div class="section-title">
+          <h2>Последний день</h2>
+
+          <span>Воскресенье</span>
+        </div>
+
+        <div class="info-box">
+          <i data-lucide="plane"></i>
+
+          <div>
+            В аэропорт Копенгагена приезжаем примерно за
+            <strong>2,5 часа до вылета</strong>.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="timeline">
+            <div class="timeline-item" data-event="8">
+              <div class="time">09:30</div>
+
+              <div class="timeline-card">
+                <h3>Велосипедный маршрут</h3>
+
+                <p>
+                  Берём велосипеды и отправляемся по главным
+                  достопримечательностям города.
+                </p>
+
+                <div class="price">≈ 35 DKK</div>
+
+                <div class="buttons" style="margin-top: 15px">
+                  <a
+                    class="btn primary"
+                    target="_blank"
+                    href="https://www.google.com/maps/dir/Tivoli+Gardens,+Vesterbrogade+3,+1630+K%C3%B8benhavn+V,+Denmark/B%C3%B8rsen,+1215+K%C3%B8benhavn,+Denmark/Indre+By,+Copenhagen,+Denmark/Nyhavn,+K%C3%B8benhavn,+Denmark/Rosenborg+Castle,+%C3%98ster+Voldgade+4A,+1350+K%C3%B8benhavn,+Denmark/Frederik's+Church,+Frederiksgade+4,+1265+K%C3%B8benhavn,+Denmark/Amalienborg+Palace,+Amalienborg+Slotsplads,+1257+K%C3%B8benhavn+K,+Denmark/Gefion+Fountain,+Churchillparken,+1263+K%C3%B8benhavn,+Denmark/The+Little+Mermaid,+Langelinie,+2100+K%C3%B8benhavn+%C3%98,+Denmark/Freetown+Christiania,+Copenhagen+Municipality,+Denmark/"
+                  >
+                    <i data-lucide="bike"></i>
+
+                    Открыть маршрут
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="9">
+              <div class="time">10:45</div>
+
+              <div class="timeline-card">
+                <h3>Королевская библиотека</h3>
+
+                <p>Прогулка и осмотр знаменитой библиотеки. Вход бесплатный.</p>
+
+                <div class="price">Бесплатно</div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="10">
+              <div class="time">12:00</div>
+
+              <div class="timeline-card">
+                <h3>Strøget + LEGO Store</h3>
+
+                <p>Главная торговая улица города, сувениры и LEGO Store.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="11">
+              <div class="time">13:30</div>
+
+              <div class="timeline-card">
+                <h3>Rundetaarn</h3>
+
+                <p>Панорама города с легендарной круглой башни.</p>
+
+                <div class="price">40 DKK • 5,36 €</div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="12">
+              <div class="time">14:15</div>
+
+              <div class="timeline-card">
+                <h3>Перекус и хостел</h3>
+
+                <p>Быстро перекусываем и забираем вещи из хостела.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="13">
+              <div class="time">14:25</div>
+
+              <div class="timeline-card">
+                <h3>Дорога в аэропорт</h3>
+
+                <p>Едем из центра Копенгагена в аэропорт.</p>
+
+                <div class="buttons">
+                  <a
+                    class="btn primary"
+                    target="_blank"
+                    href="https://maps.app.goo.gl/mpwdWHrEmEfFUmvd9"
+                  >
+                    <i data-lucide="plane"></i>
+
+                    Маршрут в аэропорт
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item" data-event="14">
+              <div class="time">15:00</div>
+
+              <div class="timeline-card">
+                <h3>Аэропорт</h3>
+
+                <p>Спокойно проходим контроль и готовимся к вылету домой.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================
+         BUDGET
+    ========================== -->
+
+      <section id="budget" class="day-content">
+        <div class="section-title">
+          <h2>Общий бюджет</h2>
+
+          <span> без жилья и перелёта </span>
+        </div>
+
+        <div class="budget-card">
+          <h2>Примерные расходы</h2>
+
+          <div class="budget-big">2 454 DKK</div>
+
+          <div class="budget-subtitle">≈ 328,44 € за всю поездку на двоих</div>
+
+          <div class="budget-people">
+            <div class="budget-person">
+              <span> Стас </span>
+
+              <strong> 1 235 DKK </strong>
+
+              <span> ≈ 165,28 € </span>
+            </div>
+
+            <div class="budget-person">
+              <span> Маргарита </span>
+
+              <strong> 1 219 DKK </strong>
+
+              <span> ≈ 163,16 € </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
+            <h2>Перед поездкой</h2>
+          </div>
+
+          <div class="checklist">
+            <label class="check-item">
+              <input type="checkbox" data-check="passport" />
+
+              <span> Проверить паспорта и документы </span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" data-check="tickets" />
+
+              <span> Проверить билеты на самолёт </span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" data-check="hotel" />
+
+              <span> Написать в Sleep in Heaven, сообщить о времени прибытия </span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" data-check="money" />
+
+              <span> Подготовить банковскую карту </span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" data-check="internet" />
+
+              <span> Купить сим карту </span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" data-check="maps" />
+
+              <span> Собрать еду из списка </span>
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-scroll="home">
+        <i data-lucide="house"></i>
+
+        <span> Главная </span>
+      </button>
+
+      <button class="nav-btn" data-scroll="day1">
+        <i data-lucide="route"></i>
+
+        <span> Маршрут </span>
+      </button>
+
+      <button class="nav-btn" data-scroll="budget">
+        <i data-lucide="wallet"></i>
+
+        <span> Бюджет </span>
+      </button>
+    </nav>
+
+    <script>
+      /* =========================
+       LUCIDE ICONS
+    ========================== */
+
+      lucide.createIcons();
+
+      /* =========================
+       TRAVEL EVENTS
+    ========================== */
+
+      const travelEvents = [
+        {
+          day: "Пятница • 11 сентября",
+          title: "Прилет в Копенгаген",
+          description: "Покупаем City Pass и отправляемся в центр.",
+          event: 0,
+        },
+
+        {
+          day: "Пятница • 11 сентября",
+          title: "Экскурсия на лодке",
+          description: "Часовая прогулка по каналам Копенгагена.",
+          event: 1,
+        },
+
+        {
+          day: "Пятница • 11 сентября",
+          title: "Ужин в Smagsløget",
+          description: "Время попробовать знаменитые датские сэндвичи.",
+          event: 2,
+        },
+
+        {
+          day: "Пятница • 11 сентября",
+          title: "Sleep in Heaven",
+          description: "Заселяемся в хостел и отдыхаем.",
+          event: 3,
+        },
+
+        {
+          day: "Суббота • 12 сентября",
+          title: "Cisternerne",
+          description: "Исследуем необычные подземные арт-цистерны.",
+          event: 4,
+        },
+
+        {
+          day: "Суббота • 12 сентября",
+          title: "Den Blå Planet",
+          description: "Отправляемся в крупнейший океанариум Дании.",
+          event: 5,
+        },
+
+        {
+          day: "Суббота • 12 сентября",
+          title: "Обед и отдых",
+          description: "Burger King и небольшой перерыв перед вечером.",
+          event: 6,
+        },
+
+        {
+          day: "Суббота • 12 сентября",
+          title: "Tivoli Gardens",
+          description: "Вечер в легендарном парке развлечений.",
+          event: 7,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Велосипедный маршрут",
+          description: "Прощальная поездка по главным местам Копенгагена.",
+          event: 8,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Королевская библиотека",
+          description: "Посещаем знаменитую библиотеку.",
+          event: 9,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Strøget + LEGO Store",
+          description: "Покупаем сувениры и гуляем по центру.",
+          event: 10,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Rundetaarn",
+          description: "Поднимаемся ради панорамы города.",
+          event: 11,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Перекус и хостел",
+          description: "Перекусываем и забираем вещи.",
+          event: 12,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Дорога в аэропорт",
+          description: "Отправляемся в аэропорт.",
+          event: 13,
+        },
+
+        {
+          day: "Воскресенье • 13 сентября",
+          title: "Аэропорт",
+          description: "Путешествие подходит к концу.",
+          event: 14,
+        },
+      ];
+
+      /* =========================
+       CURRENT EVENT
+    ========================== */
+
+      let currentEvent =
+        Number(localStorage.getItem("copenhagen_current_event")) || 0;
+
+      const currentTitle = document.getElementById("currentTitle");
+
+      const currentDescription = document.getElementById("currentDescription");
+
+      const liveDay = document.getElementById("liveDay");
+
+      const progressText = document.getElementById("progressText");
+
+      const progressFill = document.getElementById("progressFill");
+
+      function updateTravelMode() {
+        const event = travelEvents[currentEvent];
+
+        if (!event) {
+          currentTitle.textContent = "Путешествие завершено";
+
+          currentDescription.textContent = "Вы успешно прошли весь маршрут!";
+
+          liveDay.textContent = "Готово";
+        } else {
+          currentTitle.textContent = event.title;
+
+          currentDescription.textContent = event.description;
+
+          liveDay.textContent = event.day;
+        }
+
+        progressText.textContent = `${Math.min(
+          currentEvent,
+          travelEvents.length,
+        )} / ${travelEvents.length}`;
+
+        const progress = Math.min(
+          (currentEvent / travelEvents.length) * 100,
+          100,
+        );
+
+        progressFill.style.width = `${progress}%`;
+
+        document.querySelectorAll(".timeline-item").forEach((item) => {
+          const itemEvent = Number(item.dataset.event);
+
+          item.classList.remove("current", "completed");
+
+          if (itemEvent < currentEvent) {
+            item.classList.add("completed");
+          }
+
+          if (itemEvent === currentEvent) {
+            item.classList.add("current");
+          }
+        });
+
+        localStorage.setItem("copenhagen_current_event", currentEvent);
+      }
+
+      document.getElementById("nextEventBtn").addEventListener("click", () => {
+        if (currentEvent < travelEvents.length) {
+          currentEvent++;
+
+          updateTravelMode();
+        }
+      });
+
+      document
+        .getElementById("showCurrentBtn")
+        .addEventListener("click", () => {
+          const event = document.querySelector(
+            `[data-event="${currentEvent}"]`,
+          );
+
+          if (event) {
+            event.scrollIntoView({
+              behavior: "smooth",
+
+              block: "center",
+            });
+          }
+        });
+
+      /* =========================
+       DAY TABS
+    ========================== */
+
+      const tabs = document.querySelectorAll(".day-tab");
+
+      const contents = document.querySelectorAll(".day-content");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.day;
+
+          tabs.forEach((item) => item.classList.remove("active"));
+
+          contents.forEach((item) => item.classList.remove("active"));
+
+          tab.classList.add("active");
+
+          document.getElementById(target).classList.add("active");
+
+          window.scrollTo({
+            top: document.querySelector(".day-tabs").offsetTop - 10,
+
+            behavior: "smooth",
+          });
+        });
+      });
+
+      /* =========================
+       CHECKLIST
+    ========================== */
+
+      const checkboxes = document.querySelectorAll(".check-item input");
+
+      checkboxes.forEach((checkbox) => {
+        const key = checkbox.dataset.check;
+
+        if (localStorage.getItem("copenhagen_" + key) === "true") {
+          checkbox.checked = true;
+
+          checkbox.parentElement.classList.add("checked");
+        }
+
+        checkbox.addEventListener("change", () => {
+          localStorage.setItem(
+            "copenhagen_" + key,
+
+            checkbox.checked,
+          );
+
+          checkbox.parentElement.classList.toggle(
+            "checked",
+
+            checkbox.checked,
+          );
+        });
+      });
+
+      /* =========================
+       BOTTOM NAVIGATION
+    ========================== */
+
+      const navButtons = document.querySelectorAll(".nav-btn");
+
+      navButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const target = button.dataset.scroll;
+
+          if (target === "home") {
+            window.scrollTo({
+              top: 0,
+
+              behavior: "smooth",
+            });
+          } else {
+            const tab = document.querySelector(`[data-day="${target}"]`);
+
+            if (tab) {
+              tab.click();
+            }
+          }
+
+          navButtons.forEach((item) => item.classList.remove("active"));
+
+          button.classList.add("active");
+        });
+      });
+
+      /* =========================
+       INITIALIZATION
+    ========================== */
+
+      updateTravelMode();
+    </script>
+  </body>
+</html>
