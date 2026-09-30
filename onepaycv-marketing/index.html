@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>OnePayCV — Marketing Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">ONEPAYCV</div>
+      <h1>30 дней маркетинга</h1>
+    </div>
+    <button id="resetBtn" class="icon-btn" aria-label="Сбросить прогресс" title="Сбросить прогресс">↺</button>
+  </header>
+
+  <main>
+    <section class="hero-card">
+      <div class="hero-top">
+        <div>
+          <span class="muted">Общий прогресс</span>
+          <div class="big-number"><span id="completedCount">0</span><small>/26</small></div>
+        </div>
+        <div class="level-box">
+          <span>LEVEL</span>
+          <strong id="level">1</strong>
+        </div>
+      </div>
+      <div class="progress"><div id="totalProgress"></div></div>
+      <div class="stats">
+        <span>🔥 <b id="streak">0</b> дней подряд</span>
+        <span>⭐ <b id="xp">0</b> XP</span>
+      </div>
+    </section>
+
+    <section class="motivation" id="motivation">
+      <div class="motivation-mark">✦</div>
+      <div>
+        <strong id="motivationTitle">Начни с одного часа.</strong>
+        <p id="motivationText">Тебе не нужно продвигать весь OnePayCV сегодня. Нужно только сделать сегодняшний шаг.</p>
+      </div>
+    </section>
+
+    <section class="today-card">
+      <div class="section-head">
+        <div>
+          <span class="muted">Сегодня</span>
+          <h2 id="todayTitle">—</h2>
+        </div>
+        <span class="today-badge" id="todayBadge">—</span>
+      </div>
+      <p id="todayTask">—</p>
+      <button id="todayComplete" class="primary-btn">Отметить выполненным</button>
+    </section>
+
+    <div id="weeks"></div>
+
+    <section class="achievements-card">
+      <div class="section-head">
+        <div>
+          <span class="muted">Награды</span>
+          <h2>Маленькие победы</h2>
+        </div>
+      </div>
+      <div class="badges" id="badges"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
